@@ -5,14 +5,15 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
 import { UserProvider } from "./contexts/UserContext";
+import { Buffer } from "buffer";
+
+window.Buffer = Buffer;
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <BrowserRouter>
-      <UserProvider>
-        <App />
-        <Toaster />
-      </UserProvider>
-    </BrowserRouter>
-  </StrictMode>
+  <BrowserRouter>
+    <UserProvider>
+      <App />
+      <Toaster />
+    </UserProvider>
+  </BrowserRouter>,
 );

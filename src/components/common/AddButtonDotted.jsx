@@ -5,12 +5,8 @@ const AddButtonDotted = ({ onClick, text }) => {
   return (
     <Button
       type="button"
-      variant="ghost"
       onClick={onClick}
-      className="hover:cursor-pointer w-full h-24 border-2 border-dashed border-gray-400 
-                       flex items-center justify-center text-gray-500 
-                       hover:border-gray-600 hover:text-gray-700 
-                       rounded-m"
+      className="flex h-28 w-full items-center justify-center rounded-2xl border-2 border-dashed border-[#183D3D]/40 text-sm font-medium text-[#183D3D] transition hover:border-[#183D3D] hover:bg-[#E6F0EC]"
     >
       {text}
     </Button>

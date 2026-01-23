@@ -8,9 +8,11 @@ import { certificationSchema } from "./certifications.schema";
 
 export const resumeSchema = z.object({
     resumeTitle: z.string().min(1, "Title is required").default(""),
-    resumeType: z.enum(["Classic", "Modern"]).optional(),
-    personalDetails: personalFormSchema.optional(),
-    educationDetails: z.array(educationFormSchema).min(1, "At least one education entry is required").default([educationFormSchema.parse({})]),
+    resumeType: z.enum(["Classic", "Modern", "Minimal", "Charm", "Boxed", "Bold"]).default("Classic"),
+    personalDetails: personalFormSchema.default({}),
+    accentColor: z.string().catch("#183D3D"),
+    // educationDetails: z.array(educationFormSchema).min(1, "At least one education entry is required").default([educationFormSchema.parse({})]),
+    educationDetails: z.array(educationFormSchema).optional(),
     skills: z.array(skillSchema).optional(),
     professionalExperience: z.array(experienceSchema).optional(),
     projects: z.array(projectSchema).optional(),

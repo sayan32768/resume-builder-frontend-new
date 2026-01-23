@@ -7,6 +7,7 @@ export const signupSchema = z
         email: z.email("Invalid email").transform((value) => value.toLowerCase()).default(""),
         password: z.string().min(8, "Password must be at least 8 characters").default(""),
         confirmPassword: z.string().default(""),
+        role: z.enum(["USER", "ADMIN"]).default("USER"),
     })
     .refine((data) => data.password === data.confirmPassword, {
         message: "Passwords do not match",

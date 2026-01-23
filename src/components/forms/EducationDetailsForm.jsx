@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useFieldArray, useFormContext } from "react-hook-form";
@@ -13,6 +13,7 @@ import {
 } from "../ui/select";
 import { DatePicker } from "../common/DatePicker";
 import { Textarea } from "../ui/textarea";
+import AddButtonDotted from "../common/AddButtonDotted";
 
 const EducationDetailsForm = () => {
   const {
@@ -21,190 +22,209 @@ const EducationDetailsForm = () => {
     formState: { errors },
   } = useFormContext();
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control,
     name: "educationDetails",
   });
 
   return (
-    <div className="flex flex-col bg-gray-50 w-full">
+    <div className="flex flex-col gap-4">
       {fields.map((obj, index) => (
-        <div key={obj.id} className="flex flex-col gap-3 p-0 mb-4 rounded-xl">
-          <h1 className="text-xl">Education Details {index + 1}</h1>
+        <div
+          key={obj.id}
+          className="rounded-3xl bg-white/60 p-4 shadow-sm md:p-6"
+        >
+          {/* HEADER */}
+          <div className="flex flex-row justify-between gap-4 rounded-2xl bg-[#e9fff0]/30 p-4">
+            <h2 className="text-sm font-semibold text-[#183D3D]">
+              Education {index + 1}
+            </h2>
 
-          <div className="flex md:flex-row max-md:flex-col gap-3">
-            <div className="flex flex-col gap-3 flex-1">
-              <Label htmlFor="name">Name</Label>
-
-              <div className="gap-y-1 flex flex-col">
-                <Input
-                  placeholder="Institution Name"
-                  {...register(`educationDetails.${index}.name`, {})}
-                />
-
-                {errors.educationDetails?.[index]?.name && (
-                  <p className="pb-2 text-red-900">
-                    {errors.educationDetails?.[index]?.name.message}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-3 flex-1">
-              <Label htmlFor="degree">Degree</Label>
-
-              <div className="gap-y-1 flex flex-col">
-                <Input
-                  placeholder="Enter your degree"
-                  {...register(`educationDetails.${index}.degree`, {})}
-                />
-                {errors.educationDetails?.[index]?.degree && (
-                  <p className="pb-2 text-red-900">
-                    {errors.educationDetails?.[index]?.degree.message}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-y-1">
-            <div className="flex flex-row space-x-3">
-              <div className="flex flex-col gap-3 flex-3">
-                <Label htmlFor="score">Score</Label>
-
-                <Input
-                  placeholder="Enter your score"
-                  {...register(`educationDetails.${index}.grades.score`, {})}
-                />
-              </div>
-
-              <div className="flex flex-col gap-y-3">
-                <Label htmlFor="type">Grade Type</Label>
-
-                <Controller
-                  name={`educationDetails.${index}.grades.type`}
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value ?? ""}
-                    >
-                      <SelectTrigger
-                        className={"shadow-none hover:cursor-pointer"}
-                      >
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent className={"bg-white rounded-sm border-0"}>
-                        <SelectItem value="CGPA">CGPA</SelectItem>
-                        <SelectItem value="Percentage">Percentage</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-            </div>
-
-            {errors.educationDetails?.[index]?.grades && (
-              <p className="pb-2 text-red-900">
-                {errors.educationDetails?.[index]?.grades?.message}
-              </p>
+            {fields.length > 0 && (
+              <button
+                type="button"
+                onClick={() => remove(index)}
+                className="text-sm text-red-600 hover:underline"
+              >
+                Remove
+              </button>
             )}
           </div>
 
-          <Label htmlFor="message">Additional Info</Label>
+          {/* INSTITUTION + DEGREE */}
+          <div className="flex flex-row gap-4 rounded-2xl bg-[#e9fff0]/30 p-4">
+            <div className="flex flex-1 flex-col gap-2">
+              <Label className="text-sm font-medium text-slate-600">
+                Institution Name
+              </Label>
+              <Input
+                className="rounded-xl border-slate-300 bg-[#F3F7F5] focus:ring-2 focus:ring-[#183D3D]/30"
+                placeholder="University / College"
+                {...register(`educationDetails.${index}.name`)}
+              />
+              {errors.educationDetails?.[index]?.name && (
+                <p className="ml-1 text-sm text-red-600">
+                  {errors.educationDetails[index].name.message}
+                </p>
+              )}
+            </div>
 
-          <div className="gap-y-1 flex flex-col">
+            <div className="flex flex-1 flex-col gap-2">
+              <Label className="text-sm font-medium text-slate-600">
+                Degree
+              </Label>
+              <Input
+                className="rounded-xl border-slate-300 bg-[#F3F7F5] focus:ring-2 focus:ring-[#183D3D]/30"
+                placeholder="B.Tech, B.Sc, M.Sc"
+                {...register(`educationDetails.${index}.degree`)}
+              />
+              {errors.educationDetails?.[index]?.degree && (
+                <p className="ml-4 text-sm text-red-600">
+                  {errors.educationDetails[index].degree.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* SCORE + TYPE */}
+          <div className="flex flex-row gap-4 rounded-2xl bg-[#e9fff0]/30 p-4">
+            <div className="flex flex-1 flex-col gap-2">
+              <Label className="text-sm font-medium text-slate-600">
+                Score
+              </Label>
+              <Input
+                className="rounded-xl border-slate-300 bg-[#F3F7F5] focus:ring-2 focus:ring-[#183D3D]/30"
+                placeholder="8.5 / 85"
+                {...register(`educationDetails.${index}.grades.score`)}
+              />
+            </div>
+
+            <div className="flex flex-1 flex-col gap-2">
+              <Label className="text-sm font-medium text-slate-600">
+                Grade Type
+              </Label>
+              <Controller
+                name={`educationDetails.${index}.grades.type`}
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={field.value ?? ""}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger className="rounded-xl border-slate-300 bg-[#F3F7F5] focus:ring-2 focus:ring-[#183D3D]/30">
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-sm border-0 bg-white">
+                      <SelectItem value="CGPA">CGPA</SelectItem>
+                      <SelectItem value="Percentage">Percentage</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+          </div>
+
+          {errors.educationDetails?.[index]?.grades && (
+            <p className="ml-4 text-sm text-red-600">
+              {errors.educationDetails[index].grades.message ??
+                "Invalid grade details"}
+            </p>
+          )}
+
+          {/* ADDITIONAL INFO */}
+          <div className="flex flex-col gap-4 rounded-2xl bg-[#e9fff0]/30 p-4">
+            <Label className="text-sm font-medium text-slate-600">
+              Additional Info
+            </Label>
             <Textarea
-              placeholder="Enter something..."
-              {...register(`educationDetails.${index}.grades.message`, {})}
+              className="min-h-[100px] rounded-xl border-slate-300 bg-[#F3F7F5] focus:ring-2 focus:ring-[#183D3D]/30"
+              placeholder="Honors, specialization, achievements"
+              {...register(`educationDetails.${index}.grades.message`)}
             />
             {errors.educationDetails?.[index]?.grades?.message && (
-              <p className="pb-2 text-red-900">
-                {errors.educationDetails?.[index]?.grades?.message.message}
+              <p className="ml-4 text-sm text-red-600">
+                {errors.educationDetails[index].grades.message.message}
               </p>
             )}
           </div>
 
-          <div className="flex flex-col gap-1">
-            <div className="flex flex-row gap-x-3">
-              <div className="flex flex-1 flex-col gap-y-3">
-                <Label htmlFor="startDate">Start Date</Label>
-                <div className="flex flex-col gap-y-1">
-                  <Controller
-                    name={`educationDetails.${index}.dates.startDate`}
-                    control={control}
-                    render={({ field }) => <DatePicker field={field} />}
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-1 flex-col gap-y-3">
-                <Label htmlFor="endDate">End Date</Label>
-
-                <div className="flex flex-col gap-y-1">
-                  <Controller
-                    name={`educationDetails.${index}.dates.endDate`}
-                    control={control}
-                    render={({ field }) => <DatePicker field={field} />}
-                  />
-                </div>
-              </div>
+          {/* DATES */}
+          <div className="flex flex-row gap-4 rounded-2xl bg-[#e9fff0]/30 p-4">
+            <div className="flex flex-1 flex-col gap-2">
+              <Label className="text-sm font-medium text-slate-600">
+                Start Date
+              </Label>
+              <Controller
+                name={`educationDetails.${index}.dates.startDate`}
+                control={control}
+                render={({ field }) => <DatePicker field={field} />}
+              />
             </div>
 
-            {errors.educationDetails?.[index]?.dates && (
-              <p className="pb-2 text-red-900">
-                {errors.educationDetails?.[index]?.dates.message}
-              </p>
-            )}
+            <div className="flex flex-1 flex-col gap-2">
+              <Label className="text-sm font-medium text-slate-600">
+                End Date
+              </Label>
+              <Controller
+                name={`educationDetails.${index}.dates.endDate`}
+                control={control}
+                render={({ field }) => <DatePicker field={field} />}
+              />
+            </div>
           </div>
 
-          <Label htmlFor="Location">Location</Label>
+          {errors.educationDetails?.[index]?.dates && (
+            <p className="ml-4 text-sm text-red-600">
+              {errors.educationDetails[index].dates.message}
+            </p>
+          )}
 
-          <div className="gap-y-1 flex flex-col">
+          {/* LOCATION */}
+          <div className="flex flex-col gap-4 rounded-2xl bg-[#e9fff0]/30 p-4">
+            <Label className="text-sm font-medium text-slate-600">
+              Location
+            </Label>
             <Textarea
-              placeholder="Enter Institution Address"
-              {...register(`educationDetails.${index}.location`, {})}
+              className="rounded-xl border-slate-300 bg-[#F3F7F5] focus:ring-2 focus:ring-[#183D3D]/30"
+              placeholder="City, Country"
+              {...register(`educationDetails.${index}.location`)}
             />
             {errors.educationDetails?.[index]?.location && (
-              <p className="pb-2 text-red-900">
-                {errors.educationDetails?.[index]?.location.message}
+              <p className="ml-4 text-sm text-red-600">
+                {errors.educationDetails[index].location.message}
               </p>
             )}
           </div>
-
-          <Button
-            variant={"outline"}
-            className={`w-full mt-1 ${
-              fields.length === 1 ? "hidden" : "block"
-            } hover:bg-slate-900 hover:text-white hover:cursor-pointer`}
-            onClick={() => remove(index)}
-          >
-            Remove Education
-          </Button>
-
-          <hr
-            className={`my-8 border-t border-gray-400 ${
-              fields.length === 1 ? "hidden" : "block"
-            }`}
-          />
         </div>
       ))}
 
-      <Button
-        variant={"outline"}
-        className={
-          "w-full hover:bg-slate-900 hover:text-white hover:cursor-pointer"
-        }
-        onClick={(e) => {
-          e.preventDefault();
-          append();
-        }}
-      >
-        Add Education
-      </Button>
+      {/* ADD EDUCATION */}
+      {fields.length === 0 ? (
+        <AddButtonDotted
+          onClick={(e) => {
+            e.preventDefault();
+            append();
+          }}
+          text="+ Add Education"
+        />
+      ) : (
+        <Button
+          type="button"
+          variant="outline"
+          className="rounded-xl border-[#183D3D] text-[#183D3D] hover:bg-[#183D3D] hover:text-white"
+          onClick={(e) => {
+            e.preventDefault();
+            append();
+          }}
+        >
+          + Add Education
+        </Button>
+      )}
 
       {errors?.educationDetails && (
-        <p className="pb-2 text-red-900">{errors.educationDetails.message}</p>
+        <p className="text-sm text-red-600">
+          {errors.educationDetails.message}
+        </p>
       )}
     </div>
   );

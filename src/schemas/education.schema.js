@@ -1,13 +1,22 @@
 import { z } from "zod";
 
 export const educationFormSchema = z.object({
-    name: z.string().optional(),
+    name: z.string().min(1, "Name is required"),
     degree: z.string().optional(),
 
     dates: z
         .object({
-            startDate: z.date().optional().nullable(),
-            endDate: z.date().optional().nullable(),
+            startDate: z
+                .union([z.date(), z.string()])
+                .nullable()
+                .optional()
+                .transform((v) => (v ? new Date(v) : null)),
+
+            endDate: z
+                .union([z.date(), z.string()])
+                .nullable()
+                .optional()
+                .transform((v) => (v ? new Date(v) : null)),
         })
         .optional()
         .refine(
@@ -17,34 +26,32 @@ export const educationFormSchema = z.object({
             },
             {
                 message: "Enter valid dates",
-                path: [],
             }
         ),
+
 
     location: z.string().optional(),
 
     grades: z
         .object({
-            type: z.enum(["Percentage", "CGPA"], { message: "Select a type" }).optional(),
-            score: z.string().optional(),
+            type: z.enum(["Percentage", "CGPA"]).optional().nullable(),
+            score: z.string().optional().nullable(),
             message: z.string().optional(),
         })
         .optional()
         .refine(
             (grade) => {
-                if ((grade?.score && !grade?.type) || (grade?.type && !grade?.score)) return false;
+                if (!grade?.score && !grade?.type) return true;   // empty is OK
+                if (grade?.score && !grade?.type) return false;
+                if (grade?.type && !grade?.score) return false;
 
-
-                const scoreNum = parseFloat(grade?.score || "");
-                if (isNaN(scoreNum)) return true;
-
-                if (grade?.type === "CGPA" && (scoreNum < 0 || scoreNum > 10)) return false;
-                if (grade?.type === "Percentage" && (scoreNum < 0 || scoreNum > 100)) return false;
+                const n = parseFloat(grade.score || "");
+                if (isNaN(n)) return false;
+                if (grade.type === "CGPA" && (n < 0 || n > 10)) return false;
+                if (grade.type === "Percentage" && (n < 0 || n > 100)) return false;
 
                 return true;
             },
-            {
-                message: "Enter a valid score based on the selected type",
-            }
+            { message: "Enter a valid score based on the selected type" }
         ),
 });

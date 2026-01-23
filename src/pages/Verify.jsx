@@ -23,7 +23,7 @@ const Verify = () => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         if (res.data.success) {
           toast.success(res.data.message);
@@ -38,7 +38,7 @@ const Verify = () => {
         console.log(error);
         toast.error(
           error.response?.data?.message ||
-            "Verification Failed, Please try Again."
+            "Verification Failed, Please try Again.",
         );
         setStatus("Verification Failed, Please try Again");
       }
@@ -47,7 +47,7 @@ const Verify = () => {
   }, [token, navigate]);
 
   return (
-    <div className="border-1 p-10 m-10 text-center rounded-xl border-slate-400 bg-slate-300 text-slate-800 flex flex-col items-center gap-y-6">
+    <div className="m-10 flex flex-col items-center gap-y-6 rounded-xl border-1 border-slate-400 bg-slate-300 p-10 text-center text-slate-800">
       {status === "Email Verified Successfully" ? <VerifiedIcon /> : <X />}
       <p>{status}</p>
     </div>

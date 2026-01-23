@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const projectSchema = z.object({
-    title: z.string().optional(),
+    title: z.string().min(1, "Title is required"),
     description: z.string().optional(),
     extraDetails: z.string().optional(),
     links: z

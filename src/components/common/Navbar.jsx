@@ -1,112 +1,84 @@
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { AtSign, LogOut, User2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = ({ user, handleLogout }) => {
   const [isDropdownShowing, setIsDropdownShowing] = useState(false);
-  return (
-    // <div className="flex flex-col gap-y-6 mb-6">
-    //   <div className="flex flex-row justify-between h-20 gap-x-3 px-16 items-center">
-    //     <div className="flex flex-col">
-    //       <span className="text-slate-500 text-sm pt-3">Logged in as</span>
-    //       <h1 className="max-md:text-lg md:text-xl lg:text-2xl font-semibold">
-    //         {user.username}
-    //       </h1>
-    //     </div>
-    //     {user ? (
-    //       <Button
-    //         className={
-    //           "hover:cursor-pointer hover:bg-gray-900 hover:text-white"
-    //         }
-    //         onClick={handleLogout}
-    //         variant={"outline"}
-    //       >
-    //         Logout
-    //       </Button>
-    //     ) : null}
-    //   </div>
-    // </div>
-    <div className="relative max-md:pl-6 max-md:pr-3 md:max-w-[80vw] w-full">
-      <div className="w-full max-md:h-16 md:h-20 flex flex-row justify-between">
-        <div className="h-full flex flex-col justify-center">
-          <a href="/home" className="md:text-2xl max-md:text-xl font-extrabold">
-            Resume.
-          </a>
-        </div>
+  const navigate = useNavigate();
 
-        {user && (
-          <div className="h-full flex flex-col justify-center max-md:w-16 md:w-20 p-3">
-            {/* {user ? (
-          <Button
-            className={
-              "hover:cursor-pointer hover:bg-gray-900 hover:text-white"
-            }
-            onClick={handleLogout}
-            variant={"outline"}
-          >
-            Logout
-          </Button>
-        ) : null} */}
-            <div
-              onClick={() => {
-                setIsDropdownShowing(!isDropdownShowing);
-              }}
-              className="hover:cursor-pointer rounded-full h-full bg-slate-900 text-white flex items-center justify-center"
+  return (
+    <header className="relative z-50 w-full">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 md:h-20">
+        {/* LOGO */}
+        <a
+          href="/home"
+          className="text-xl font-semibold text-[#183D3D] md:text-2xl"
+        >
+          Resume.
+        </a>
+
+        {/* RIGHT SIDE */}
+        {user ? (
+          <div className="relative">
+            {/* AVATAR */}
+            <button
+              onClick={() => setIsDropdownShowing((prev) => !prev)}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-[#183D3D] text-white transition hover:opacity-90 md:h-12 md:w-12"
             >
-              <span className="text-2xl font-extrabold">
+              <span className="text-lg font-bold">
                 {user.email.charAt(0).toUpperCase()}
               </span>
-            </div>
-          </div>
-        )}
+            </button>
 
-        {!user && (
-          <div className="h-full flex flex-col justify-center p-3">
-            <Button
-              className={
-                "hover:cursor-pointer hover:bg-gray-900 hover:text-white"
-              }
-              onClick={() => {
-                navigate("/home", { replace: true });
-              }}
-              variant={"outline"}
-            >
-              Login
-            </Button>
+            {/* DROPDOWN */}
+            {isDropdownShowing && (
+              <>
+                <div className="absolute right-0 mt-3 w-64 rounded-2xl border border-slate-200 bg-white p-4 shadow-lg">
+                  <div className="flex flex-col gap-3 text-sm">
+                    <div className="flex items-center gap-3 text-slate-700">
+                      <User2 className="h-4 w-4 text-[#183D3D]" />
+                      <span className="truncate font-medium">
+                        {user.fullName}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-3 text-slate-600">
+                      <AtSign className="h-4 w-4 text-[#183D3D]" />
+                      <span className="truncate">{user.email}</span>
+                    </div>
+
+                    <div className="h-px bg-slate-200" />
+
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-3 rounded-lg px-2 py-2 text-red-600 transition hover:cursor-pointer hover:bg-red-50"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span className="text-sm font-medium">Logout</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* BACKDROP */}
+                <div
+                  onClick={() => setIsDropdownShowing(false)}
+                  className="fixed inset-0 z-[-1]"
+                />
+              </>
+            )}
           </div>
+        ) : (
+          <Button
+            onClick={() => navigate("/login")}
+            variant="outline"
+            className="border-[#183D3D] text-[#183D3D] hover:bg-[#183D3D] hover:text-white"
+          >
+            Login
+          </Button>
         )}
       </div>
-
-      {isDropdownShowing && (
-        <div className="absolute text-sm md:right-0 max-md:right-3 bg-white w-[250px] z-3 shadow-xs px-4 py-4">
-          <div className="flex flex-col space-y-2">
-            <div className="flex flex-row space-x-3">
-              <User2 />
-              <a>{user.fullName}</a>
-            </div>
-
-            <div className="flex flex-row space-x-3">
-              <AtSign />
-              <a>{user.email}</a>
-            </div>
-
-            <div className="hover:cursor-pointer flex flex-row space-x-3">
-              <LogOut />
-              <a className={""} onClick={handleLogout} variant={"outline"}>
-                Logout
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {isDropdownShowing && (
-        <div
-          onClick={() => setIsDropdownShowing(!isDropdownShowing)}
-          className="fixed inset-0 z-2"
-        />
-      )}
-    </div>
+    </header>
   );
 };
 

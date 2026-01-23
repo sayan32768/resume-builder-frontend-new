@@ -1,280 +1,621 @@
-import React, { useEffect, useState } from "react";
-import resumeImg from "../assets/resume1.png";
-import resumeImg2 from "../assets/resume2.png";
-import { Card, CardContent } from "@/components/ui/card";
-import { FileText, MoreVertical, Trash } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Download, MoreVertical, Plus, Trash } from "lucide-react";
 import { getData } from "@/contexts/UserContext";
-import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+import api from "@/api/axios";
+import { AnimatePresence, motion } from "framer-motion";
+import { renderTemplatePreviewCard } from "@/components/previews/helpers/RenderTemplatePreviewCard";
+import { RESUME_TEMPLATES } from "@/components/previews/helpers/templates";
 
 const Home = () => {
   const { user, setUser } = getData();
-
   const navigate = useNavigate();
 
   const [pastResumes, setPastResumes] = useState([]);
-
+  const [drafts, setDrafts] = useState([]);
   const [dataLoading, setDataLoading] = useState(true);
-
   const [open, setOpen] = useState(0);
+  const [activeTab, setActiveTab] = useState("resumes");
+
+  const tabRefs = {
+    resumes: useRef(null),
+    drafts: useRef(null),
+    templates: useRef(null),
+  };
 
   useEffect(() => {
     const getResumeData = async () => {
       setDataLoading(true);
-      // await new Promise((resolve) => setTimeout(resolve, 3000));
       try {
-        const res = await axios.get(`${API_BASE_URL}/resume/all`, {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!res.data.success) {
-          setDataLoading(false);
-          toast.error(res.data.message || "Couldn't fetch past resumes");
-        } else {
-          setDataLoading(false);
-          setPastResumes(res.data.data);
+        // await new Promise((res) => setTimeout(res, 5000));
+        const res = await api.get(`/api/resume/all`);
+        if (res.data.success) {
+          console.log(res.data.data);
+          setPastResumes(res.data.data.filter((doc) => doc.isDraft === false));
+          setDrafts(res.data.data.filter((doc) => doc.isDraft === true));
         }
-      } catch (error) {
-        setDataLoading(false);
-        // toast.error("Couldn't get past resumes");
       } finally {
         setDataLoading(false);
       }
     };
-
     getResumeData();
   }, []);
 
+  useEffect(() => {
+    const close = () => setOpen(null);
+    window.addEventListener("click", close);
+    return () => window.removeEventListener("click", close);
+  }, []);
+
+  const [indicatorStyle, setIndicatorStyle] = useState({});
+
+  useEffect(() => {
+    const el = tabRefs[activeTab]?.current;
+    if (!el) return;
+
+    setIndicatorStyle({
+      width: el.offsetWidth,
+      transform: `translateX(${el.offsetLeft}px)`,
+    });
+  }, [activeTab, pastResumes.length, drafts.length]);
+
   const handleLogout = async () => {
     try {
-      const res = await axios.post(
-        `${API_BASE_URL}/user/logout`,
-        {},
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
+      const res = await api.post("/api/auth/logout");
       if (res.data.success) {
+        localStorage.clear();
         navigate("/");
-        await new Promise((resolve) => setTimeout(resolve, 10));
         setUser(null);
         toast.success("Logged out successfully");
-      } else {
-        toast.error("Could not log out");
       }
-    } catch (error) {
+    } catch {
       toast.error("Could not log out");
     }
   };
 
-  const deleteResume = async (id) => {
+  const deleteResume = async (id, isDraft) => {
     try {
-      const res = await axios.delete(`${API_BASE_URL}/resume/delete/${id}`, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
+      const res = await api.delete(`api/resume/${id}`);
       if (res.data.success) {
-        const updatedResumes = pastResumes.filter(
-          (resume) => resume._id !== id
-        );
-        setPastResumes(updatedResumes);
-        toast.success("Resume successfully deleted");
-      } else {
-        toast.error("Could not delete resume");
+        if (!isDraft) {
+          setPastResumes((prev) => prev.filter((r) => r._id !== id));
+        } else {
+          setDrafts((prev) => prev.filter((r) => r._id !== id));
+        }
+
+        toast.success("Resume deleted");
       }
-    } catch (error) {
-      console.log(error);
+    } catch {
       toast.error("Could not delete resume");
     }
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
-      <div className="flex-1 overflow-y-auto">
-        <div className="flex flex-col items-center">
-          <Navbar user={user} handleLogout={handleLogout} />
+    <>
+      <div className="relative min-h-screen overflow-hidden bg-[#F3F7F5]">
+        <Navbar user={user} handleLogout={handleLogout} />
 
-          <h1 className="text-lg text-center max-md:mb-2 md:mb-4 mt-4 font-bold mx-6">
-            Choose a template to get started
-          </h1>
+        {/* ================= GLOBAL BACKGROUND ================= */}
+        <div className="pointer-events-none absolute inset-0 z-0">
+          {/* Big circles */}
+          <div className="absolute -top-10 -left-32 h-96 w-96 rounded-full bg-[#CFE5DC]" />
+          <div className="absolute top-24 -right-24 h-72 w-72 rounded-full bg-[#F4EEDF]" />
+          <div className="absolute bottom-32 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full bg-[#DCEDEA]" />
 
-          <div className="flex max-md:flex-col md:flex-row justify-center items-center gap-x-4 gap-y-6">
-            <div className="flex flex-col gap-y-3">
-              <div
-                onClick={() => navigate("/create?type=Modern")}
-                className="hover:cursor-pointer rounded-[8px] relative group md:mx-2 max-md:my-2 w-[250px] aspect-[8.5/11] border-1 border-slate-500 overflow-hidden transition-all duration-300 p-[0px]"
-              >
-                <img
-                  className="rounded-[8px] w-full h-full object-cover shadow-2xl"
-                  src={resumeImg2}
-                  alt="Resume Preview"
+          {/* Dot grid */}
+          <div className="absolute right-20 bottom-40 opacity-30">
+            <div className="grid grid-cols-6 gap-2">
+              {Array.from({ length: 18 }).map((_, i) => (
+                <span
+                  key={i}
+                  className="h-1.5 w-1.5 rounded-full bg-[#183D3D]/40"
                 />
-                <div className="absolute inset-[0px] bg-black/0 group-hover:bg-black/50 flex items-center justify-center transition-all duration-300">
-                  <span className="text-white text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    Continue
-                  </span>
-                </div>
-              </div>
-
-              <h1 className="text-center">Modern</h1>
-            </div>
-
-            <div className="flex flex-col gap-y-3">
-              <div
-                onClick={() => navigate("/create?type=Classic")}
-                className="rounded-[8px] hover:cursor-pointer relative group md:mx-2 max-md:my-2 w-[250px] aspect-[8.5/11] border-1 border-slate-500 overflow-hidden transition-all duration-300 p-[0px]"
-              >
-                <img
-                  className="rounded-[8px] w-full h-full object-cover shadow-md"
-                  src={resumeImg}
-                  alt="Resume Preview"
-                />
-
-                <div className="absolute inset-[0px] bg-black/0 group-hover:bg-black/50 flex items-center justify-center transition-all duration-300">
-                  <span className="text-white text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    Continue
-                  </span>
-                </div>
-              </div>
-              <h1 className="text-center">Classic</h1>
+              ))}
             </div>
           </div>
 
-          <div id="previously-saved-resumes-section">
-            <h2 className="text-lg text-center max-md:mt-12 md:mt-16 mb-4 font-bold px-6">
-              Your Resumes
+          {/* Organic blob */}
+          <div className="absolute top-10 left-1/3 h-48 w-48 rounded-[40%] bg-[#F4EEDF] opacity-70" />
+
+          {/* Wavy line */}
+          <svg
+            className="absolute bottom-24 left-10 h-40 w-80 opacity-20"
+            viewBox="0 0 300 120"
+            fill="none"
+          >
+            <path
+              d="M0 60 C60 10, 120 110, 180 60 C220 30, 260 80, 300 60"
+              stroke="#183D3D"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+
+        {/* White frosted overlay */}
+        <div className="pointer-events-none absolute inset-0 z-10 bg-white/30 backdrop-blur-xl" />
+
+        {/* ================= PAGE CONTENT ================= */}
+        <div className="relative z-10">
+          {/* <div className="mx-auto mt-9 max-w-7xl px-12">
+            <h2 className="text-xl font-bold text-[#183D3D]">
+              Welcome back, {user.fullName}
             </h2>
+            <p className="mb-8 text-[#183D3D]/70">
+              You have {pastResumes.length} resumes active in your account.
+            </p>
+          </div> */}
 
-            <div className="md:max-w-[80vw] max-md:px-6 grid max-md:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {dataLoading ? (
-                [1, 2, 3, 4].map((_, idx) => (
-                  <div key={idx} className="flex items-center space-x-4">
-                    <Skeleton className="bg-gray-300 h-8 w-8 rounded-full" />
-                    <div className="space-y-2">
-                      <Skeleton className="bg-gray-300 h-4 w-[180px]" />
-                      <Skeleton className="bg-gray-300 h-4 w-[180px]" />
-                    </div>
-                  </div>
-                ))
-              ) : pastResumes.length === 0 ? (
-                <div className="text-center">No resume found</div>
-              ) : (
-                pastResumes.map((doc, index) => (
-                  <div
-                    key={index}
-                    className="max-lg:w-[300px] lg:w-[265px] hover:cursor-pointer flex flex-col bg-white shadow-sm border border-slate-500 rounded-lg hover:shadow-lg hover:bg-slate-50"
+          <div className="mx-auto mt-9 max-w-7xl px-12">
+            {dataLoading ? (
+              <div className="animate-pulse space-y-3">
+                {/* Title skeleton */}
+                <div className="h-6 w-64 rounded-md bg-[#183D3D]/20" />
+
+                {/* Subtitle skeleton */}
+                <div className="h-4 w-96 rounded-md bg-[#183D3D]/15" />
+              </div>
+            ) : (
+              <>
+                <h2 className="text-xl font-bold text-[#183D3D]">
+                  Welcome back, {user.fullName}
+                </h2>
+                <p className="mb-8 text-[#183D3D]/70">
+                  You have {pastResumes.length} resumes active in your account.
+                </p>
+              </>
+            )}
+          </div>
+
+          {/* Tabs */}
+          <div className="relative mx-auto mt-9 max-w-7xl border-b border-slate-200 px-12">
+            <div className="relative flex gap-8">
+              {["resumes", "drafts", "templates"].map((tab) => {
+                const count =
+                  tab === "resumes"
+                    ? pastResumes.length
+                    : tab === "drafts"
+                      ? drafts.length
+                      : 0;
+
+                return (
+                  <button
+                    key={tab}
+                    ref={tabRefs[tab]}
+                    onClick={() => setActiveTab(tab)}
+                    className={`relative py-3 text-sm font-medium transition-colors ${
+                      activeTab === tab
+                        ? "text-[#183D3D]"
+                        : "text-slate-500 hover:text-slate-700"
+                    }`}
                   >
-                    <div
-                      className="p-5 relative h-40"
-                      onClick={() => navigate(`/edit/${doc._id}`)}
-                    >
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <FileText className="w-5 h-5 text-slate-700" />
-                          <h5
-                            className="truncate max-w-[150px] text-slate-800 text-base font-semibold"
-                            title={doc.resumeTitle || "Untitled"}
+                    <div className="flex items-center gap-2">
+                      <span>
+                        {tab === "resumes"
+                          ? "Resumes"
+                          : tab === "drafts"
+                            ? "Drafts"
+                            : "Templates"}
+                      </span>
+
+                      {/* Badge — hidden for templates & zero counts */}
+                      {tab !== "templates" && count > 0 && (
+                        <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#183D3D]/20 px-1.5 text-xs font-semibold text-[#183D3D]">
+                          {count}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+
+              {/* animated underline */}
+              <span
+                className="absolute bottom-0 h-[2px] bg-[#183D3D] transition-all duration-300"
+                style={{
+                  indicatorStyle,
+                  width: tabRefs[activeTab]?.current?.offsetWidth ?? 0,
+                  transform: `translateX(${
+                    tabRefs[activeTab]?.current?.offsetLeft ?? 0
+                  }px)`,
+                }}
+              />
+            </div>
+          </div>
+
+          <AnimatePresence mode="wait">
+            {activeTab === "resumes" && (
+              <motion.div
+                key="resumes"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+              >
+                <>
+                  {/* ================= CREATE SECTION ================= */}
+                  <section className="relative overflow-hidden bg-white/30 backdrop-blur-md">
+                    <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
+                      <div className="relative z-10 mx-auto max-w-7xl px-6 py-0">
+                        <p className="mb-4 text-xl font-bold text-[#183D3D]">
+                          Your Resumes{" "}
+                        </p>
+                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                          {/* CREATE RESUME CARD */}
+                          <div
+                            onClick={() => navigate("/create?type=Classic")}
+                            className="group flex h-[380px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#CFE5DC] bg-[#EEF5F1] transition hover:-translate-y-1 hover:cursor-pointer hover:border-[#183D3D] hover:shadow-lg"
                           >
-                            {doc.resumeTitle || "Untitled"}
-                          </h5>
-                        </div>
-
-                        <h5 className="text-slate-700 text-sm font-medium bg-slate-100 rounded-md px-2 py-1">
-                          {doc.resumeType || "Type"}
-                        </h5>
-                      </div>
-
-                      <div className="flex items-center justify-between mt-auto pt-2 border-t border-slate-200">
-                        <div>
-                          <h2 className="text-xs text-slate-500 uppercase tracking-wide">
-                            Modified
-                          </h2>
-                          <p className="text-sm text-slate-700 font-light">
-                            {new Date(doc.updatedAt).toLocaleString("en-IN", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </p>
-                        </div>
-
-                        <div
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setOpen(doc._id);
-                          }}
-                          className="bg-slate-200 hover:text-white hover:bg-red-700 hover:cursor-pointer text-black rounded-lg p-2 ml-2"
-                        >
-                          <Trash className="w-4 h-4" />
-                        </div>
-                      </div>
-                      <div
-                        className={`absolute bottom-0 left-0 w-full h-10 rounded-b-lg p-3 ${
-                          open === doc._id ? "bg-red-500/30" : ""
-                        }`}
-                      >
-                        {open === doc._id && (
-                          <div className="flex flex-row justify-between w-full items-center h-full">
-                            <div
-                              className={`flex-1 text-sm font-medium text-red-900`}
-                            >
-                              Delete resume?
+                            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#E6F0EC] text-[#183D3D] transition group-hover:bg-[#183D3D] group-hover:text-white">
+                              <Plus className="h-7 w-7" />
                             </div>
 
-                            <div className="flex flex-1 flex-row gap-3 w-full">
-                              <div
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  deleteResume(doc._id);
-                                }}
-                                className="p-1 px-3 text-xs bg-white border-1 border-slate-400 flex-1 rounded-sm hover:outline-2 hover:outline-white text-center"
-                              >
-                                Yes
-                              </div>
-                              <div
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setOpen(0);
-                                }}
-                                className="p-1 px-3 text-xs bg-white border-1 border-slate-400 flex-1 rounded-sm hover:outline-2 hover:outline-white text-center"
-                              >
-                                No
-                              </div>
-                            </div>
+                            <p className="mt-4 text-base font-semibold text-slate-800">
+                              Create Resume
+                            </p>
+
+                            <p className="mt-1 text-sm text-slate-500">
+                              Classic template
+                            </p>
                           </div>
-                        )}
+
+                          {dataLoading ? (
+                            [1, 2, 3].map((_, idx) => (
+                              <div
+                                key={idx}
+                                className="overflow-hidden rounded-2xl bg-[#E6F0EC]"
+                              >
+                                <Skeleton className="h-56 w-full bg-[#CFE5DC]" />
+                                <div className="space-y-2 p-4">
+                                  <Skeleton className="h-4 w-3/4 bg-[#CFE5DC]" />
+                                  <Skeleton className="h-3 w-1/2 bg-[#c9e1d8]" />
+                                </div>
+                              </div>
+                            ))
+                          ) : pastResumes.length === 0 ? (
+                            // <div className="col-span-full py-12 text-center text-slate-500">
+                            //   No past resumes found
+                            // </div>
+                            <></>
+                          ) : (
+                            pastResumes.map((doc) => (
+                              <div
+                                key={doc._id}
+                                onClick={() => navigate(`/edit/${doc._id}`)}
+                                className="group relative flex h-[380px] flex-col overflow-hidden rounded-2xl bg-[#EEF5F1] transition hover:cursor-pointer hover:shadow-lg"
+                              >
+                                {/* PREVIEW IMAGE */}
+                                <div className="relative flex-1 overflow-hidden">
+                                  {renderTemplatePreviewCard(
+                                    doc.resumeType,
+                                    doc.color,
+                                  )}
+                                </div>
+
+                                {/* COMPLETION BAR */}
+                                <div className="absolute right-0 bottom-0 left-0 h-1 bg-slate-200">
+                                  <div
+                                    className="h-full transition-all duration-300"
+                                    style={{
+                                      width: `${doc.completion || 0}%`,
+                                      backgroundColor:
+                                        doc.completion >= 80
+                                          ? "#16a34a" // green
+                                          : doc.completion >= 40
+                                            ? "#f59e0b" // amber
+                                            : "#dc2626", // red
+                                    }}
+                                  />
+                                </div>
+
+                                {/* Menu */}
+                                <div className="absolute top-3 right-3">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setOpen(
+                                        open === doc._id ? null : doc._id,
+                                      );
+                                    }}
+                                    className="rounded-lg bg-white/90 p-2 shadow hover:bg-slate-100"
+                                  >
+                                    <MoreVertical size={16} />
+                                  </button>
+
+                                  {open === doc._id && (
+                                    <div
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="absolute right-0 mt-2 w-32 rounded-xl border-0 bg-white shadow-lg"
+                                    >
+                                      <button
+                                        onClick={() =>
+                                          deleteResume(doc._id, false)
+                                        }
+                                        className="flex w-full gap-2 rounded-xl px-4 py-2 text-sm text-red-600 hover:cursor-pointer hover:bg-red-50"
+                                      >
+                                        <Trash size={14} />
+                                        Delete
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* BOTTOM INFO */}
+                                <div className="border-t border-slate-200 p-4">
+                                  <div className="mb-2 flex items-start justify-between gap-2">
+                                    <h5
+                                      className="max-w-[160px] truncate font-semibold text-slate-800"
+                                      title={doc.resumeTitle || "Untitled"}
+                                    >
+                                      {doc.resumeTitle || "Untitled"}
+                                    </h5>
+
+                                    <span className="shrink-0 rounded-full bg-[#E6F0EC] px-3 py-1 text-xs font-medium text-[#183D3D]">
+                                      {doc.resumeType || "Type"}
+                                    </span>
+                                  </div>
+
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <p className="text-xs tracking-wide text-slate-500 uppercase">
+                                        Modified
+                                      </p>
+                                      <p className="text-sm text-slate-700">
+                                        {new Date(
+                                          doc.updatedAt,
+                                        ).toLocaleDateString("en-IN", {
+                                          day: "2-digit",
+                                          month: "short",
+                                          year: "numeric",
+                                        })}
+                                      </p>
+                                    </div>
+
+                                    {/* DOWNLOAD */}
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        // intentionally empty
+                                      }}
+                                      className="rounded-lg bg-[#F3F7F5] p-2 text-slate-600 transition hover:cursor-pointer hover:bg-emerald-100 hover:text-emerald-700"
+                                    >
+                                      <Download className="h-4 w-4" />
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
-              )}
-            </div>
+                  </section>
+                </>
+              </motion.div>
+            )}
+
+            {activeTab === "drafts" && (
+              <motion.div
+                key="drafts"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+              >
+                <>
+                  <section className="relative overflow-hidden bg-white/30 backdrop-blur-md">
+                    <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
+                      <div className="relative z-10 mx-auto max-w-7xl px-6 py-0">
+                        <p className="mb-4 text-xl font-bold text-[#183D3D]">
+                          Your Resume Drafts{" "}
+                        </p>
+
+                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                          {dataLoading ? (
+                            [1, 2, 3].map((_, idx) => (
+                              <div
+                                key={idx}
+                                className="overflow-hidden rounded-2xl bg-[#E6F0EC]"
+                              >
+                                <Skeleton className="h-56 w-full bg-[#CFE5DC]" />
+                                <div className="space-y-2 p-4">
+                                  <Skeleton className="h-4 w-3/4 bg-[#CFE5DC]" />
+                                  <Skeleton className="h-3 w-1/2 bg-[#c9e1d8]" />
+                                </div>
+                              </div>
+                            ))
+                          ) : drafts.length === 0 ? (
+                            <div className="group rounded-2xlborder-[#CFE5DC] col-span-full flex h-[380px] flex-col items-center justify-center">
+                              <p className="mt-4 text-base font-semibold text-slate-800">
+                                Drafts Empty
+                              </p>
+
+                              <p className="mt-1 text-sm text-slate-500">
+                                No Drafts Found.
+                              </p>
+                            </div>
+                          ) : (
+                            drafts.map((doc) => (
+                              <div
+                                key={doc._id}
+                                onClick={() => navigate(`/edit/${doc._id}`)}
+                                className="group relative flex h-[380px] flex-col overflow-hidden rounded-2xl bg-[#EEF5F1] transition hover:cursor-pointer hover:shadow-lg"
+                              >
+                                {/* PREVIEW IMAGE */}
+                                <div className="relative flex-1 overflow-hidden">
+                                  {renderTemplatePreviewCard(
+                                    doc.resumeType,
+                                    doc.color,
+                                  )}
+                                </div>
+
+                                {/* COMPLETION BAR */}
+                                <div
+                                  className={`${doc.completion === 100 ? "hidden" : "block"} absolute right-0 bottom-0 left-0 h-1 bg-slate-200`}
+                                >
+                                  <div
+                                    className="h-full transition-all duration-300"
+                                    style={{
+                                      width: `${doc.completion || 0}%`,
+                                      backgroundColor:
+                                        doc.completion >= 80
+                                          ? "#16a34a" // green
+                                          : doc.completion >= 40
+                                            ? "#f59e0b" // amber
+                                            : "#dc2626", // red
+                                    }}
+                                  />
+                                </div>
+
+                                {/* Menu */}
+                                <div className="absolute top-3 right-3">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setOpen(
+                                        open === doc._id ? null : doc._id,
+                                      );
+                                    }}
+                                    className="rounded-lg bg-white/90 p-2 shadow hover:bg-slate-100"
+                                  >
+                                    <MoreVertical size={16} />
+                                  </button>
+
+                                  {open === doc._id && (
+                                    <div
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="absolute right-0 mt-2 w-32 rounded-xl border-0 bg-white shadow-lg"
+                                    >
+                                      <button
+                                        onClick={() =>
+                                          deleteResume(doc._id, true)
+                                        }
+                                        className="flex w-full gap-2 rounded-xl px-4 py-2 text-sm text-red-600 hover:cursor-pointer hover:bg-red-50"
+                                      >
+                                        <Trash size={14} />
+                                        Delete
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* BOTTOM INFO */}
+                                <div className="border-t border-slate-200 p-4">
+                                  <div className="mb-2 flex items-start justify-between gap-2">
+                                    <h5
+                                      className="max-w-[160px] truncate font-semibold text-slate-800"
+                                      title={doc.resumeTitle || "Untitled"}
+                                    >
+                                      {doc.resumeTitle || "Untitled"}
+                                    </h5>
+
+                                    <span className="shrink-0 rounded-full bg-[#E6F0EC] px-3 py-1 text-xs font-medium text-[#183D3D]">
+                                      {doc.resumeType || "Type"}
+                                    </span>
+                                  </div>
+
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <p className="text-xs tracking-wide text-slate-500 uppercase">
+                                        Modified
+                                      </p>
+                                      <p className="text-sm text-slate-700">
+                                        {new Date(
+                                          doc.updatedAt,
+                                        ).toLocaleDateString("en-IN", {
+                                          day: "2-digit",
+                                          month: "short",
+                                          year: "numeric",
+                                        })}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                </>
+              </motion.div>
+            )}
+
+            {activeTab === "templates" && (
+              <motion.div
+                key="templates"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+              >
+                <>
+                  {/* ================= TEMPLATES SECTION ================= */}
+                  <section className="bg-white/30 backdrop-blur-md">
+                    <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
+                      <div className="relative z-10 mx-auto max-w-7xl px-6 py-0">
+                        <p className="mb-4 text-xl font-bold text-[#183D3D]">
+                          Create a New Resume from Existing Templates{" "}
+                        </p>
+                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                          {/* CREATE RESUME CARD */}
+                          {RESUME_TEMPLATES.map((tpl) => (
+                            <div
+                              key={tpl.id}
+                              onClick={() =>
+                                navigate(`/create?type=${tpl.name}`)
+                              }
+                              className="group relative flex h-[380px] flex-col overflow-hidden rounded-2xl bg-[#EEF5F1] transition hover:cursor-pointer hover:shadow-lg"
+                            >
+                              {/* PREVIEW IMAGE (SAME AS RESUME CARD) */}
+                              <div className="relative flex-1 overflow-hidden">
+                                {renderTemplatePreviewCard(tpl.name, "#183D3D")}
+                              </div>
+
+                              {/* BOTTOM INFO (SAME STRUCTURE) */}
+                              <div className="border-t border-slate-200 p-4">
+                                <div className="mb-2 flex items-start justify-between gap-2">
+                                  <h5 className="font-semibold text-slate-800">
+                                    {tpl.name}
+                                  </h5>
+
+                                  <span className="rounded-full bg-[#E6F0EC] px-3 py-1 text-xs font-medium text-[#183D3D]">
+                                    Template
+                                  </span>
+                                </div>
+
+                                <div>
+                                  <p className="text-xs tracking-wide text-slate-500 uppercase">
+                                    Start from
+                                  </p>
+                                  <p className="text-sm text-slate-700">
+                                    Blank resume
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                </>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* ================= FOOTER ================= */}
+          <div className="mt-18">
+            <Footer />
           </div>
         </div>
       </div>
-      <div className="max-md:mt-12 md:mt-16">
-        <Footer />
-      </div>
-    </div>
+    </>
   );
 };
 

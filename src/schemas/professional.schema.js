@@ -1,13 +1,22 @@
 import { z } from "zod";
 
 export const experienceSchema = z.object({
-    companyName: z.string().optional(),
+    companyName: z.string().min(1, "Name is required"),
     companyAddress: z.string().optional(),
     position: z.string().optional(),
     dates: z
         .object({
-            startDate: z.date().optional().nullable(),
-            endDate: z.date().optional().nullable(),
+            startDate: z
+                .union([z.date(), z.string()])
+                .nullable()
+                .optional()
+                .transform((v) => (v ? new Date(v) : null)),
+
+            endDate: z
+                .union([z.date(), z.string()])
+                .nullable()
+                .optional()
+                .transform((v) => (v ? new Date(v) : null)),
         })
         .optional()
         .refine(
@@ -17,7 +26,6 @@ export const experienceSchema = z.object({
             },
             {
                 message: "Enter valid dates",
-                path: [],
             }
         ),
     workDescription: z.string().optional(),

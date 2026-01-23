@@ -1,6 +1,9 @@
+import api from "@/api/axios";
+import { RESUME_TEMPLATES } from "@/components/previews/helpers/templates";
 import { X } from "lucide-react";
 import React, { useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 function ResumeCreator() {
@@ -10,15 +13,6 @@ function ResumeCreator() {
   const [searchParams] = useSearchParams();
   const resumeType = searchParams.get("type");
 
-  if (!["Classic", "Modern"].includes(resumeType)) {
-    return (
-      <div className="border-1 p-10 m-10 text-center rounded-xl border-slate-400 bg-slate-300 text-slate-800 flex flex-col items-center gap-y-6">
-        <X />
-        <p>{"Some error occurred!"}</p>
-      </div>
-    );
-  }
-
   useEffect(() => {
     if (effectRan.current) return;
     effectRan.current = true;
@@ -26,32 +20,56 @@ function ResumeCreator() {
     const createDraft = async () => {
       console.log(resumeType);
 
-      const res = await fetch(`${API_BASE_URL}/resume/create`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ resumeType, resumeTitle: "" }),
-        credentials: "include",
-      });
+      try {
+        const res = await api.post(`api/resume/create`, {
+          resumeType: resumeType,
+          resumeTitle: "",
+          accentColor: "#183D3D",
+          isDraft: true,
+        });
+        if (res.data.success) {
+          navigate(`/edit/${res.data.data._id}`, { replace: true });
+        }
+      } catch (error) {
+        toast.error(
+          error.response?.data?.message ||
+            "Something went wrong, please try again.",
+        );
+      }
 
       //   await new Promise((resolve) => setTimeout(resolve, 3000));
-
-      const data = await res.json();
-
-      console.log(data);
-
-      // navigate(`/edit/${data.data._id}`, { replace: true });
-      navigate(`/generate/${data.data._id}`, { replace: true });
     };
 
     createDraft();
   }, [navigate, resumeType]);
 
-  return (
-    <div className="flex flex-col items-center justify-center p-10 m-10 border border-slate-400 bg-slate-300 text-slate-800 rounded-xl gap-6">
-      <div className="relative w-16 h-16">
-        <div className="absolute top-0 left-0 w-full h-full border-4 border-t-slate-700 border-slate-500 rounded-full animate-spin"></div>
+  if (!RESUME_TEMPLATES.some((t) => t.name === resumeType)) {
+    return (
+      <div className="mx-auto mt-12 max-w-lg rounded-3xl border border-red-200 bg-red-50/70 p-8 text-center shadow-sm backdrop-blur">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-600">
+          <X className="h-6 w-6" />
+        </div>
+
+        <h2 className="text-lg font-semibold text-red-700">
+          Something went wrong
+        </h2>
+
+        <p className="mt-2 text-sm text-red-600">
+          We couldn’t create your resume Please try again.
+        </p>
       </div>
-      <p className="text-lg font-medium">Creating your resume...</p>
+    );
+  }
+
+  return (
+    <div className="mx-auto mt-10 w-full max-w-xl rounded-2xl bg-white/70 p-4 shadow-sm backdrop-blur">
+      <div className="relative h-2 w-full overflow-hidden rounded-full bg-[#E6F0EC]">
+        <div className="animate-loading absolute inset-y-0 w-1/3 rounded-full bg-gradient-to-r from-[#CFE5DC] via-[#183D3D] to-[#CFE5DC]" />
+      </div>
+
+      <p className="mt-3 text-center text-sm text-slate-500">
+        Creating your resume…
+      </p>
     </div>
   );
 }

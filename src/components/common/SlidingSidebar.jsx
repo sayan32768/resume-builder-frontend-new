@@ -30,56 +30,88 @@ const SlidingSidebar = ({ show, onClose, step, setStep }) => {
       {/* Overlay */}
       {show && (
         <div
-          className="fixed inset-0 z-5 bg-black/30 transition-opacity duration-300"
+          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
           onClick={onClose}
         />
       )}
 
-      {/* Sidebar Panel */}
+      {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 z-5 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ${
-          show ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-0 left-0 z-50 h-full w-72 transform transition-transform duration-300 ${show ? "translate-x-0" : "-translate-x-full"} bg-[#F3F7F5] shadow-xl`}
       >
-        <div className="p-4">
-          {/* <h2 className="font-semibold text-lg mb-4 pl-2">Menu</h2> */}
-          <ul className="space-y-3">
-            {stepNames.map((s) => (
-              <li
-                key={s.id}
-                onClick={async (e) => {
-                  e.preventDefault();
+        <div className="flex h-full flex-col p-6">
+          {/* Header */}
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold text-[#183D3D]">
+              Resume Sections
+            </h2>
+            <p className="text-sm text-slate-500">Jump between sections</p>
+          </div>
 
-                  if (s.id <= step) {
-                    setStep(s.id);
-                    onClose();
-                    return;
-                  }
+          {/* Steps */}
+          <ul className="flex flex-col gap-2">
+            {stepNames.map((s, index) => {
+              const isActive = step === s.id;
+              const isCompleted = step > s.id;
 
-                  let allValid = true;
-                  let id = s.id - 1;
+              return (
+                <li
+                  key={s.id}
+                  onClick={async (e) => {
+                    e.preventDefault();
 
-                  for (let i = 0; i < s.id; i++) {
-                    const isValid = await trigger(stepKeys[i]);
-                    console.log(id);
-                    if (!isValid) {
-                      toast.error("Please fill in all the necessary Details");
-                      allValid = false;
-                      id = i;
-                      break;
+                    if (s.id <= step) {
+                      setStep(s.id);
+                      onClose();
+                      return;
                     }
-                  }
 
-                  setStep(id + 1);
-                  onClose();
-                }}
-                className={`cursor-pointer p-2 rounded-md transition-colors duration-200 ${
-                  step === s.id ? "bg-gray-200" : "hover:bg-gray-100"
-                }`}
-              >
-                {s.title}
-              </li>
-            ))}
+                    let id = s.id - 1;
+
+                    for (let i = 0; i < s.id; i++) {
+                      const isValid = await trigger(stepKeys[i]);
+                      if (!isValid) {
+                        toast.error("Please fill in all the necessary details");
+                        id = i;
+                        break;
+                      }
+                    }
+
+                    setStep(id + 1);
+                    onClose();
+                  }}
+                  className={`group flex items-center gap-3 rounded-xl px-3 py-2 transition-all hover:cursor-pointer ${
+                    isActive
+                      ? "bg-[#183D3D] text-white shadow-sm"
+                      : "hover:bg-[#E6F0EC]"
+                  } `}
+                >
+                  {/* Indicator */}
+                  <div
+                    className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
+                      isActive
+                        ? "bg-white text-[#183D3D]"
+                        : isCompleted
+                          ? "bg-[#CFE5DC] text-[#183D3D]"
+                          : "bg-[#E6F0EC] text-slate-500"
+                    } `}
+                  >
+                    {s.id}
+                  </div>
+
+                  {/* Label */}
+                  <span
+                    className={`text-sm font-medium ${
+                      isActive
+                        ? "text-white"
+                        : "text-slate-700 group-hover:text-slate-900"
+                    } `}
+                  >
+                    {s.title}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>

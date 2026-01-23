@@ -11,6 +11,10 @@ import VerifyEmail from "./pages/VerifyEmail";
 import Verify from "./pages/Verify";
 import ResumeCreator from "./pages/ResumeCreator";
 import ResumeGenerator from "./pages/ResumeGenerator";
+import Verified from "./pages/Verified";
+import ChangePassword from "./pages/ChangePassword";
+import SendEmail from "./pages/SendEmail";
+import LandingPage2 from "./pages/LandingPage2";
 
 function App() {
   return (
@@ -22,9 +26,15 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<LandingPage2 />} />
         <Route path="/verify" element={<VerifyEmail />} />
-        <Route path="/verify/:token" element={<Verify />} />
+        <Route path="/verified" element={<Verified />} />
+        {/* <Route path="/verify/:token" element={<Verify />} /> */}
+
+        <Route path="/reset-password" element={<ChangePassword />} />
+
+        <Route path="/forgot-password" element={<SendEmail />} />
+
         {/* <Route path="/about" element={<About />} /> */}
         <Route
           path="/home"

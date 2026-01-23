@@ -23,6 +23,7 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import { toast } from "sonner";
 import { getData } from "@/contexts/UserContext";
+import api from "@/api/axios";
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export function SignupForm({ className, ...props }) {
@@ -56,28 +57,27 @@ export function SignupForm({ className, ...props }) {
 
   const onSubmit = async (data) => {
     setUser(null);
+    console.log(data);
     try {
-      const res = await axios.post(`${API_BASE_URL}/user/register`, data, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const res = await api.post(`/api/auth/register`, data);
       if (res.data.success) {
-        toast.success("Please login using your credentials");
-        navigate("/login");
+        toast.success(res.data.message);
+        navigate("/verify");
       }
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
-          "Something went wrong, please try again."
+          "Something went wrong, please try again.",
       );
     }
   };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className={"bg-slate-100 border-slate-300"}>
+      <Card className={"border-slate-200 bg-[#E6F0EC]"}>
         <CardHeader>
-          <CardTitle>Create an account</CardTitle>
-          <CardDescription>
+          <CardTitle className={"text-slate-900"}>Create an account</CardTitle>
+          <CardDescription className={"text-slate-600"}>
             Enter your information below to create your account
           </CardDescription>
         </CardHeader>
@@ -106,9 +106,13 @@ export function SignupForm({ className, ...props }) {
           >
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="fullName">Full Name</FieldLabel>
+                <FieldLabel className={"text-slate-700"} htmlFor="fullName">
+                  Full Name
+                </FieldLabel>
                 <Input
-                  className={"bg-slate-300 border-0 border-slate-700"}
+                  className={
+                    "border border-slate-300 bg-[#F3F7F5] focus:border-emerald-600 focus:ring-emerald-600"
+                  }
                   {...register("fullName")}
                   onKeyDown={(e) => {
                     const regex = /^[a-zA-Z\s]*$/;
@@ -121,7 +125,7 @@ export function SignupForm({ className, ...props }) {
                   placeholder="John Doe"
                 />
                 {errors.fullName && (
-                  <p className="text-red-900 text-sm">
+                  <p className="text-sm text-red-900">
                     {errors.fullName?.message}
                   </p>
                 )}
@@ -129,7 +133,7 @@ export function SignupForm({ className, ...props }) {
               {/* <Field>
                 <FieldLabel htmlFor="username">Username</FieldLabel>
                 <Input
-                  className={"bg-slate-300 border-0 border-slate-700"}
+                  className={"bg-[#F3F7F5] border border-slate-300 focus:border-emerald-600 focus:ring-emerald-600"}
                   {...register("username")}
                   onKeyDown={(e) => {
                     const regex = /^[a-zA-Z0-9]*$/;
@@ -148,29 +152,37 @@ export function SignupForm({ className, ...props }) {
                 )}
               </Field> */}
               <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <FieldLabel className={"text-slate-700"} htmlFor="email">
+                  Email
+                </FieldLabel>
                 <Input
-                  className={"bg-slate-300 border-0 border-slate-700"}
+                  className={
+                    "border border-slate-300 bg-[#F3F7F5] focus:border-emerald-600 focus:ring-emerald-600"
+                  }
                   {...register("email")}
                   id="email"
                   type="email"
                   placeholder="m@example.com"
                 />
                 {errors.email && (
-                  <p className="text-red-900 text-sm">{errors.email.message}</p>
+                  <p className="text-sm text-red-900">{errors.email.message}</p>
                 )}
-                <FieldDescription>
+                <FieldDescription className={"text-slate-700"}>
                   We&apos;ll use this to contact you. We will not share your
                   email with anyone else.
                 </FieldDescription>
               </Field>
               <Field>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <FieldLabel className={"text-slate-700"} htmlFor="password">
+                  Password
+                </FieldLabel>
                 <div className="relative">
                   <Input
                     id="password"
                     type={!isPasswordVisible ? "password" : "text"}
-                    className={"bg-slate-300 border-0 border-slate-700"}
+                    className={
+                      "border border-slate-300 bg-[#F3F7F5] focus:border-emerald-600 focus:ring-emerald-600"
+                    }
                     {...register("password")}
                     onKeyDown={(e) => {
                       if (e.key === " ") {
@@ -183,29 +195,35 @@ export function SignupForm({ className, ...props }) {
                     }}
                   />
                   <Button
+                    tabIndex={-1}
                     onClick={changeVisibilityPassword}
                     className={
-                      "absolute right-0 top-0 h-full px-3 py-2 hover:cursor-pointer"
+                      "absolute top-0 right-0 h-full bg-transparent px-3 py-2 text-slate-600 hover:bg-transparent"
                     }
                   >
                     {isPasswordVisible ? <FaRegEye /> : <FaRegEyeSlash />}
                   </Button>
                 </div>
                 {errors.password && (
-                  <p className="text-red-900 text-sm">
+                  <p className="text-sm text-red-900">
                     {errors.password.message}
                   </p>
                 )}
               </Field>
               <Field>
-                <FieldLabel htmlFor="confirmPassword">
+                <FieldLabel
+                  className={"text-slate-700"}
+                  htmlFor="confirmPassword"
+                >
                   Confirm Password
                 </FieldLabel>
                 <div className="relative">
                   <Input
                     id="confirmPassword"
                     type={!isConfirmPasswordVisible ? "password" : "text"}
-                    className={"bg-slate-300 border-0 border-slate-700"}
+                    className={
+                      "border border-slate-300 bg-[#F3F7F5] focus:border-emerald-600 focus:ring-emerald-600"
+                    }
                     {...register("confirmPassword")}
                     ref={(e) => {
                       register("confirmPassword").ref(e);
@@ -215,7 +233,7 @@ export function SignupForm({ className, ...props }) {
                   {/* <Button
                     onClick={changeVisibilityConfirmPassword}
                     className={
-                      "absolute right-0 top-0 h-full px-3 py-2 hover:cursor-pointer"
+                      "absolute right-0 top-0 h-full px-3 py-2 bg-transparent text-slate-600 hover:bg-transparent"
                     }
                   >
                     {isConfirmPasswordVisible ? (
@@ -226,22 +244,50 @@ export function SignupForm({ className, ...props }) {
                   </Button> */}
                 </div>
                 {errors.confirmPassword && (
-                  <p className="text-red-900 text-sm">
+                  <p className="text-sm text-red-900">
                     {errors.confirmPassword.message}
                   </p>
                 )}
               </Field>
+
+              <Field>
+                <FieldLabel className={"text-slate-700"} htmlFor="role">
+                  Signup As
+                </FieldLabel>
+                <select
+                  id="role"
+                  {...register("role")}
+                  className="rounded-md border border-slate-300 bg-[#F3F7F5] p-2 focus:border-emerald-600 focus:ring-emerald-600"
+                >
+                  <option value="USER">User</option>
+                  <option value="ADMIN">Admin</option>
+                </select>
+
+                {errors.role && (
+                  <p className="text-sm text-red-900">{errors.role.message}</p>
+                )}
+              </Field>
+
               <Field>
                 <Button
-                  className={"bg-slate-900 text-white hover:cursor-pointer"}
+                  className={
+                    "bg-[#183D3D] text-white hover:cursor-pointer hover:bg-[#145252]"
+                  }
                   variant={"outline"}
                   type="submit"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? "Working..." : "Create Account"}
                 </Button>
-                <FieldDescription className="px-6 text-center">
-                  Already have an account? <Link to="/login">Sign in</Link>
+                <FieldDescription className="px-6 text-center text-slate-700">
+                  Already have an account?{" "}
+                  <Link
+                    to="/login"
+                    className="text-emerald-700 hover:underline"
+                  >
+                    {" "}
+                    Sign in{" "}
+                  </Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>
