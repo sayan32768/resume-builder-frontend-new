@@ -97,7 +97,10 @@ export function LoginForm({ className, ...props }) {
             <FieldGroup>
               {/* EMAIL */}
               <Field>
-                <FieldLabel htmlFor="email" className="text-slate-700">
+                <FieldLabel
+                  htmlFor="email"
+                  className={"text-sm font-medium text-slate-600"}
+                >
                   Email
                 </FieldLabel>
                 <Input
@@ -105,16 +108,19 @@ export function LoginForm({ className, ...props }) {
                   id="email"
                   type="email"
                   placeholder="m@example.com"
-                  className="border border-slate-300 bg-[#F3F7F5] focus:border-emerald-600 focus:ring-emerald-600"
+                  className="rounded-xl border-slate-300 bg-[#F3F7F5] focus:ring-2 focus:ring-[#183D3D]/30"
                 />
                 {errors.email && (
-                  <p className="text-sm text-red-900">{errors.email.message}</p>
+                  <p className="text-sm text-red-600">{errors.email.message}</p>
                 )}
               </Field>
 
               {/* PASSWORD */}
               <Field>
-                <FieldLabel htmlFor="password" className="text-slate-700">
+                <FieldLabel
+                  htmlFor="password"
+                  className={"text-sm font-medium text-slate-600"}
+                >
                   Password
                 </FieldLabel>
 
@@ -127,7 +133,7 @@ export function LoginForm({ className, ...props }) {
                       register("password").ref(e);
                       passwordRef.current = e;
                     }}
-                    className="border border-slate-300 bg-[#F3F7F5] focus:border-emerald-600 focus:ring-emerald-600"
+                    className="rounded-xl border-slate-300 bg-[#F3F7F5] focus:ring-2 focus:ring-[#183D3D]/30"
                   />
 
                   <Button
@@ -140,7 +146,7 @@ export function LoginForm({ className, ...props }) {
                 </div>
 
                 {errors.password && (
-                  <p className="text-sm text-red-900">
+                  <p className="text-sm text-red-600">
                     {errors.password.message}
                   </p>
                 )}
@@ -160,7 +166,7 @@ export function LoginForm({ className, ...props }) {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-[#183D3D] text-white hover:cursor-pointer hover:bg-[#145252]"
+                  className="w-full rounded-xl bg-[#183D3D] text-white hover:cursor-pointer hover:bg-[#145252]"
                 >
                   {isSubmitting ? "Working..." : "Login"}
                 </Button>

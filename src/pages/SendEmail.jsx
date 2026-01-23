@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
-import { VerifiedIcon, X } from "lucide-react";
+import { Loader2, VerifiedIcon, X } from "lucide-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -46,7 +46,7 @@ const SendEmail = () => {
   return status === "" ? (
     <div className="flex min-h-svh w-full items-center justify-center bg-[#F3F7F5] p-6 md:p-10">
       <div className="w-full max-w-sm">
-        <Card className="border border-slate-300 bg-[#E6F0EC]">
+        <Card className="border border-slate-200 bg-[#E6F0EC]">
           <CardHeader>
             <CardTitle className="text-slate-900">Enter your email</CardTitle>
             <CardDescription className="text-slate-600">
@@ -63,13 +63,13 @@ const SendEmail = () => {
                 type="email"
                 placeholder="Enter your email"
                 {...register("email", { required: true })}
-                className="border border-slate-300 bg-[#F3F7F5] focus:border-emerald-600 focus:ring-emerald-600"
+                className="rounded-xl border-slate-300 bg-[#F3F7F5] focus:ring-2 focus:ring-[#183D3D]/30"
               />
 
               <Button
                 type="submit"
                 disabled={formState.isSubmitting}
-                className="bg-[#183D3D] text-white hover:bg-[#145252]"
+                className="rounded-xl bg-[#183D3D] text-white hover:cursor-pointer hover:bg-[#145252]"
               >
                 {formState.isSubmitting ? "Sending..." : "Send Reset Link"}
               </Button>
@@ -81,7 +81,13 @@ const SendEmail = () => {
   ) : (
     <div className="m-10 flex flex-col items-center gap-y-6 rounded-2xl border border-slate-300 bg-[#E6F0EC] p-10 text-center text-slate-800">
       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#183D3D] text-white">
-        {status === "Email Sent Successfully" ? <VerifiedIcon /> : <X />}
+        {status === "Email Sent Successfully" ? (
+          <VerifiedIcon />
+        ) : status === "Sending Email..." ? (
+          <Loader2 className="animate-spin text-white/50" />
+        ) : (
+          <X />
+        )}
       </div>
 
       <p className="text-slate-700">{status}</p>

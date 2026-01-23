@@ -106,13 +106,14 @@ export function SignupForm({ className, ...props }) {
           >
             <FieldGroup>
               <Field>
-                <FieldLabel className={"text-slate-700"} htmlFor="fullName">
+                <FieldLabel
+                  className={"text-sm font-medium text-slate-600"}
+                  htmlFor="fullName"
+                >
                   Full Name
                 </FieldLabel>
                 <Input
-                  className={
-                    "border border-slate-300 bg-[#F3F7F5] focus:border-emerald-600 focus:ring-emerald-600"
-                  }
+                  className="rounded-xl border-slate-300 bg-[#F3F7F5] focus:ring-2 focus:ring-[#183D3D]/30"
                   {...register("fullName")}
                   onKeyDown={(e) => {
                     const regex = /^[a-zA-Z\s]*$/;
@@ -125,7 +126,7 @@ export function SignupForm({ className, ...props }) {
                   placeholder="John Doe"
                 />
                 {errors.fullName && (
-                  <p className="text-sm text-red-900">
+                  <p className="mt-0 pb-0 text-sm text-red-600">
                     {errors.fullName?.message}
                   </p>
                 )}
@@ -152,20 +153,23 @@ export function SignupForm({ className, ...props }) {
                 )}
               </Field> */}
               <Field>
-                <FieldLabel className={"text-slate-700"} htmlFor="email">
+                <FieldLabel
+                  className={"text-sm font-medium text-slate-600"}
+                  htmlFor="email"
+                >
                   Email
                 </FieldLabel>
                 <Input
-                  className={
-                    "border border-slate-300 bg-[#F3F7F5] focus:border-emerald-600 focus:ring-emerald-600"
-                  }
+                  className="rounded-xl border-slate-300 bg-[#F3F7F5] focus:ring-2 focus:ring-[#183D3D]/30"
                   {...register("email")}
                   id="email"
                   type="email"
                   placeholder="m@example.com"
                 />
                 {errors.email && (
-                  <p className="text-sm text-red-900">{errors.email.message}</p>
+                  <p className="mt-0 pb-0 text-sm text-red-600">
+                    {errors.email.message}
+                  </p>
                 )}
                 <FieldDescription className={"text-slate-700"}>
                   We&apos;ll use this to contact you. We will not share your
@@ -173,16 +177,17 @@ export function SignupForm({ className, ...props }) {
                 </FieldDescription>
               </Field>
               <Field>
-                <FieldLabel className={"text-slate-700"} htmlFor="password">
+                <FieldLabel
+                  className={"text-sm font-medium text-slate-600"}
+                  htmlFor="password"
+                >
                   Password
                 </FieldLabel>
                 <div className="relative">
                   <Input
                     id="password"
                     type={!isPasswordVisible ? "password" : "text"}
-                    className={
-                      "border border-slate-300 bg-[#F3F7F5] focus:border-emerald-600 focus:ring-emerald-600"
-                    }
+                    className="rounded-xl border-slate-300 bg-[#F3F7F5] focus:ring-2 focus:ring-[#183D3D]/30"
                     {...register("password")}
                     onKeyDown={(e) => {
                       if (e.key === " ") {
@@ -205,14 +210,14 @@ export function SignupForm({ className, ...props }) {
                   </Button>
                 </div>
                 {errors.password && (
-                  <p className="text-sm text-red-900">
+                  <p className="text-sm text-red-600">
                     {errors.password.message}
                   </p>
                 )}
               </Field>
               <Field>
                 <FieldLabel
-                  className={"text-slate-700"}
+                  className={"text-sm font-medium text-slate-600"}
                   htmlFor="confirmPassword"
                 >
                   Confirm Password
@@ -221,9 +226,7 @@ export function SignupForm({ className, ...props }) {
                   <Input
                     id="confirmPassword"
                     type={!isConfirmPasswordVisible ? "password" : "text"}
-                    className={
-                      "border border-slate-300 bg-[#F3F7F5] focus:border-emerald-600 focus:ring-emerald-600"
-                    }
+                    className="rounded-xl border-slate-300 bg-[#F3F7F5] focus:ring-2 focus:ring-[#183D3D]/30"
                     {...register("confirmPassword")}
                     ref={(e) => {
                       register("confirmPassword").ref(e);
@@ -244,13 +247,13 @@ export function SignupForm({ className, ...props }) {
                   </Button> */}
                 </div>
                 {errors.confirmPassword && (
-                  <p className="text-sm text-red-900">
+                  <p className="text-sm text-red-600">
                     {errors.confirmPassword.message}
                   </p>
                 )}
               </Field>
 
-              <Field>
+              {/* <Field>
                 <FieldLabel className={"text-slate-700"} htmlFor="role">
                   Signup As
                 </FieldLabel>
@@ -266,12 +269,12 @@ export function SignupForm({ className, ...props }) {
                 {errors.role && (
                   <p className="text-sm text-red-900">{errors.role.message}</p>
                 )}
-              </Field>
+              </Field> */}
 
               <Field>
                 <Button
                   className={
-                    "bg-[#183D3D] text-white hover:cursor-pointer hover:bg-[#145252]"
+                    "rounded-xl bg-[#183D3D] text-white hover:cursor-pointer hover:bg-[#145252]"
                   }
                   variant={"outline"}
                   type="submit"

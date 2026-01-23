@@ -128,7 +128,10 @@ const ChangePassword = () => {
                 <FieldGroup>
                   {/* PASSWORD */}
                   <Field>
-                    <FieldLabel htmlFor="password" className="text-slate-700">
+                    <FieldLabel
+                      htmlFor="password"
+                      className={"text-sm font-medium text-slate-600"}
+                    >
                       Password
                     </FieldLabel>
 
@@ -140,7 +143,7 @@ const ChangePassword = () => {
                         ref={(e) => {
                           register("password").ref(e);
                         }}
-                        className="border border-slate-300 bg-[#F3F7F5] focus:border-emerald-600 focus:ring-emerald-600"
+                        className="rounded-xl border-slate-300 bg-[#F3F7F5] focus:ring-2 focus:ring-[#183D3D]/30"
                       />
 
                       <Button
@@ -156,7 +159,7 @@ const ChangePassword = () => {
                     </div>
 
                     {errors.password && (
-                      <p className="text-sm text-red-900">
+                      <p className="mt-0 pb-0 text-sm text-red-600">
                         {errors.password.message}
                       </p>
                     )}
@@ -166,7 +169,7 @@ const ChangePassword = () => {
                   <Field>
                     <FieldLabel
                       htmlFor="confirmPassword"
-                      className="text-slate-700"
+                      className={"text-sm font-medium text-slate-600"}
                     >
                       Confirm Password
                     </FieldLabel>
@@ -180,12 +183,12 @@ const ChangePassword = () => {
                           register("confirmPassword").ref(e);
                           passwordRef.current = e;
                         }}
-                        className="border border-slate-300 bg-[#F3F7F5] focus:border-emerald-600 focus:ring-emerald-600"
+                        className="rounded-xl border-slate-300 bg-[#F3F7F5] focus:ring-2 focus:ring-[#183D3D]/30"
                       />
                     </div>
 
                     {errors.confirmPassword && (
-                      <p className="text-sm text-red-900">
+                      <p className="text-sm text-red-600">
                         {errors.confirmPassword.message}
                       </p>
                     )}
@@ -196,7 +199,7 @@ const ChangePassword = () => {
                     <Button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full bg-[#183D3D] text-white hover:cursor-pointer hover:bg-[#145252]"
+                      className="w-full rounded-xl bg-[#183D3D] text-white hover:cursor-pointer hover:bg-[#145252]"
                     >
                       {isSubmitting ? "Working..." : "Update Password"}
                     </Button>
