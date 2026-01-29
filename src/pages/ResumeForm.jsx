@@ -569,7 +569,8 @@ const ResumeForm = () => {
                       showModal(false);
                     }}
                   >
-                    {submitting ? "Saving..." : "Save Resume"}
+                    {/* {submitting && !modal ? "Saving..." : "Save Resume"} */}
+                    Save Resume
                   </Button>
                 </div>
               </div>
@@ -698,7 +699,8 @@ const ResumeForm = () => {
                       showDraftModal(false);
                     }}
                   >
-                    {submitting ? "Saving..." : "Save as Draft"}
+                    {/* {submitting ? "Saving..." : "Save as Draft"} */}
+                    Save as Draft
                   </Button>
                 </div>
               </div>
@@ -1004,7 +1006,8 @@ const ResumeForm = () => {
                             }}
                             className="rounded-xl border-red-300 text-red-600 hover:cursor-pointer hover:bg-red-100"
                           >
-                            {submitting ? "Saving…" : "Save as Draft"}
+                            {/* {submitting ? "Saving…" : "Save as Draft"} */}
+                            Save as Draft
                           </Button>
 
                           {/* Save & Publish */}
@@ -1021,7 +1024,8 @@ const ResumeForm = () => {
                             }}
                             className="rounded-xl bg-red-600 px-6 text-white hover:cursor-pointer hover:bg-red-700"
                           >
-                            {submitting ? "Saving…" : "Save Resume"}
+                            {/* {submitting && !modal ? "Saving…" : "Save Resume"} */}
+                            Save Resume
                           </Button>
                         </div>
                       </div>
