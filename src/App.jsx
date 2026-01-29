@@ -24,18 +24,17 @@ function App() {
       {/* <ResumeForm /> */}
 
       <Routes>
+        {/* <Route path="/about" element={<About />} /> */}
+        {/* <Route path="/verify/:token" element={<Verify />} /> */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/" element={<LandingPage2 />} />
-        <Route path="/verify" element={<VerifyEmail />} />
+
+        {/* <Route path="/verify" element={<VerifyEmail />} />
         <Route path="/verified" element={<Verified />} />
-        {/* <Route path="/verify/:token" element={<Verify />} /> */}
-
         <Route path="/reset-password" element={<ChangePassword />} />
+        <Route path="/forgot-password" element={<SendEmail />} /> */}
 
-        <Route path="/forgot-password" element={<SendEmail />} />
-
-        {/* <Route path="/about" element={<About />} /> */}
         <Route
           path="/home"
           element={
@@ -70,14 +69,14 @@ function App() {
           }
         />
 
-        <Route
+        {/* <Route
           path="/generate/:id"
           element={
             <ProtectedRoute>
               <ResumeGenerator />
             </ProtectedRoute>
           }
-        />
+        /> */}
       </Routes>
     </>
   );

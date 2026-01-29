@@ -151,14 +151,14 @@ export function LoginForm({ className, ...props }) {
                   </p>
                 )}
 
-                <FieldDescription className="text-right">
+                {/* <FieldDescription className="text-right">
                   <Link
                     to="/forgot-password"
                     className="text-emerald-700 hover:underline"
                   >
                     Forgot Password?
                   </Link>
-                </FieldDescription>
+                </FieldDescription> */}
               </Field>
 
               {/* SUBMIT */}

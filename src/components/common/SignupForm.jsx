@@ -62,7 +62,7 @@ export function SignupForm({ className, ...props }) {
       const res = await api.post(`/api/auth/register`, data);
       if (res.data.success) {
         toast.success(res.data.message);
-        navigate("/verify");
+        navigate("/login");
       }
     } catch (error) {
       toast.error(
