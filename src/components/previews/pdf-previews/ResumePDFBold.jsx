@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 40,
     paddingHorizontal: 45,
-    paddingBottom: 40,
+    paddingBottom: 20,
   },
 
   name: {
@@ -68,11 +68,11 @@ const styles = StyleSheet.create({
     fontSize: 11,
     lineHeight: 1.6,
     color: "#374151",
-    marginBottom: 24,
+    marginBottom: 18,
   },
 
   section: {
-    marginBottom: 22,
+    marginBottom: 2,
   },
 
   heading: {

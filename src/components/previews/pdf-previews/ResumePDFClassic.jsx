@@ -19,23 +19,23 @@ Font.register({
   family: "Nunito Sans",
   fonts: [
     {
-      src: "http://fonts.gstatic.com/s/nunito/v8/ySZTeT3IuzJj0GK6uGpbBg.ttf",
+      src: "https://fonts.gstatic.com/s/nunito/v8/ySZTeT3IuzJj0GK6uGpbBg.ttf",
       fontWeight: "normal",
     },
     {
-      src: "http://fonts.gstatic.com/s/nunito/v8/B4-BGlpEzQ4WP-D3Zi0PRQ.ttf",
+      src: "https://fonts.gstatic.com/s/nunito/v8/B4-BGlpEzQ4WP-D3Zi0PRQ.ttf",
       fontWeight: 600,
     },
     {
-      src: "http://fonts.gstatic.com/s/nunito/v8/aEdlqgMuYbpe4U3TnqOQMA.ttf",
+      src: "https://fonts.gstatic.com/s/nunito/v8/aEdlqgMuYbpe4U3TnqOQMA.ttf",
       fontWeight: 700,
     },
     {
-      src: "http://fonts.gstatic.com/s/nunito/v8/QVvFcvcPoFKH9Q71V4WsjQ.ttf",
+      src: "https://fonts.gstatic.com/s/nunito/v8/QVvFcvcPoFKH9Q71V4WsjQ.ttf",
       fontWeight: 900,
     },
     {
-      src: "http://fonts.gstatic.com/s/nunito/v8/NZNWFpgsC6hUUE2c03CLoQ.ttf",
+      src: "https://fonts.gstatic.com/s/nunito/v8/NZNWFpgsC6hUUE2c03CLoQ.ttf",
       fontStyle: "italic",
     },
   ],

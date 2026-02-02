@@ -7,11 +7,11 @@ Font.register({
   family: "Noto Sans",
   fonts: [
     {
-      src: "http://fonts.gstatic.com/s/notosans/v6/0Ue9FiUJwVhi4NGfHJS5uA.ttf",
+      src: "https://fonts.gstatic.com/s/notosans/v6/0Ue9FiUJwVhi4NGfHJS5uA.ttf",
       fontWeight: 400,
     },
     {
-      src: "http://fonts.gstatic.com/s/notosans/v6/PIbvSEyHEdL91QLOQRnZ1y3USBnSvpkopQaUR-2r7iU.ttf",
+      src: "https://fonts.gstatic.com/s/notosans/v6/PIbvSEyHEdL91QLOQRnZ1y3USBnSvpkopQaUR-2r7iU.ttf",
       fontWeight: 700,
     },
   ],

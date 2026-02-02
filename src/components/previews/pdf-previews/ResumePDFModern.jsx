@@ -6,19 +6,19 @@ Font.register({
   family: "Nunito Sans",
   fonts: [
     {
-      src: "http://fonts.gstatic.com/s/nunito/v8/ySZTeT3IuzJj0GK6uGpbBg.ttf",
+      src: "https://fonts.gstatic.com/s/nunito/v8/ySZTeT3IuzJj0GK6uGpbBg.ttf",
       fontWeight: 400,
     },
     {
-      src: "http://fonts.gstatic.com/s/nunito/v8/B4-BGlpEzQ4WP-D3Zi0PRQ.ttf",
+      src: "https://fonts.gstatic.com/s/nunito/v8/B4-BGlpEzQ4WP-D3Zi0PRQ.ttf",
       fontWeight: 600,
     },
     {
-      src: "http://fonts.gstatic.com/s/nunito/v8/aEdlqgMuYbpe4U3TnqOQMA.ttf",
+      src: "https://fonts.gstatic.com/s/nunito/v8/aEdlqgMuYbpe4U3TnqOQMA.ttf",
       fontWeight: 700,
     },
     {
-      src: "http://fonts.gstatic.com/s/nunito/v8/NZNWFpgsC6hUUE2c03CLoQ.ttf",
+      src: "https://fonts.gstatic.com/s/nunito/v8/NZNWFpgsC6hUUE2c03CLoQ.ttf",
       fontStyle: "italic",
     },
   ],
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     height: "297mm",
     backgroundColor: "#ffffff",
     color: "#1f2937",
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: "Nunito Sans",
   },
 
@@ -58,11 +58,11 @@ const styles = StyleSheet.create({
     fontWeight: 600,
     marginBottom: 12,
     letterSpacing: 1,
-    fontSize: 12,
+    fontSize: 11,
   },
 
   leftText: {
-    fontSize: 12,
+    fontSize: 11,
     marginBottom: 6,
     lineHeight: 1.5,
   },
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   },
 
   headerAbout: {
-    fontSize: 12,
+    fontSize: 11,
     letterSpacing: 2,
     color: "#4b5563",
     marginTop: 4,
@@ -216,7 +216,7 @@ const ResumePDFModern = ({ data, color }) => {
 
             {/* SKILLS */}
             {skills.length > 0 && (
-              <View style={styles.leftSection}>
+              <View style={[styles.leftSection, { marginBottom: 4 }]}>
                 <Text style={[styles.leftTitle, { color: color }]}>
                   Key Skills
                 </Text>

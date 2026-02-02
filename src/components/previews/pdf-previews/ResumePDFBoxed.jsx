@@ -7,11 +7,11 @@ Font.register({
   family: "Montserrat",
   fonts: [
     {
-      src: "http://fonts.gstatic.com/s/montserrat/v7/Kqy6-utIpx_30Xzecmeo8_esZW2xOQ-xsNqO47m55DA.ttf",
+      src: "https://fonts.gstatic.com/s/montserrat/v7/Kqy6-utIpx_30Xzecmeo8_esZW2xOQ-xsNqO47m55DA.ttf",
       fontWeight: 400,
     },
     {
-      src: "http://fonts.gstatic.com/s/montserrat/v7/IQHow_FEYlDC4Gzy_m8fcgJKKGfqHaYFsRG-T3ceEVo.ttf",
+      src: "https://fonts.gstatic.com/s/montserrat/v7/IQHow_FEYlDC4Gzy_m8fcgJKKGfqHaYFsRG-T3ceEVo.ttf",
       fontWeight: 700,
     },
   ],
@@ -21,15 +21,15 @@ Font.register({
   family: "Open Sans",
   fonts: [
     {
-      src: "http://fonts.gstatic.com/s/opensans/v13/IgZJs4-7SA1XX_edsoXWog.ttf",
+      src: "https://fonts.gstatic.com/s/opensans/v13/IgZJs4-7SA1XX_edsoXWog.ttf",
       fontWeight: 400,
     },
     {
-      src: "http://fonts.gstatic.com/s/opensans/v13/MTP_ySUJH_bn48VBG8sNSi3USBnSvpkopQaUR-2r7iU.ttf",
+      src: "https://fonts.gstatic.com/s/opensans/v13/MTP_ySUJH_bn48VBG8sNSi3USBnSvpkopQaUR-2r7iU.ttf",
       fontWeight: 600,
     },
     {
-      src: " http://fonts.gstatic.com/s/opensans/v13/O4NhV7_qs9r9seTo7fnsVKCWcynf_cDxXwCLxiixG1c.ttf",
+      src: " https://fonts.gstatic.com/s/opensans/v13/O4NhV7_qs9r9seTo7fnsVKCWcynf_cDxXwCLxiixG1c.ttf",
       fontWeight: 400,
       fontStyle: "italic",
     },
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
 
   name: {
     fontFamily: "Montserrat",
-    fontSize: 28,
+    fontSize: 18,
     fontWeight: 700,
     letterSpacing: 2,
     textTransform: "uppercase",

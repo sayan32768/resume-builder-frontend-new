@@ -95,7 +95,7 @@ const ResumePreviewBold = ({ color = "#f14d34" }) => {
 
         /* Sections */
         .section-block {
-          margin-bottom: 25px;
+          margin-bottom: 10px;
         }
 
         .section-heading {
@@ -109,7 +109,7 @@ const ResumePreviewBold = ({ color = "#f14d34" }) => {
 
         /* Experience / Entries */
         .entry-block {
-          margin-bottom: 18px;
+          margin-bottom: 14px;
         }
 
         .entry-date {
