@@ -196,7 +196,7 @@ const ResumePDFClassic = ({ data, color }) => {
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={styles.page} wrap={false}>
         {/* LEFT */}
         <View style={[styles.left, { backgroundColor: color }]}>
           <View>

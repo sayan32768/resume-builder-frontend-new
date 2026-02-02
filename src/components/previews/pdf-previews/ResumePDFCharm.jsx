@@ -212,7 +212,7 @@ const ResumePDFCharm = ({ data, color }) => {
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={styles.page} wrap={false}>
         <View style={styles.body}>
           {/* LEFT SIDEBAR */}
           <View

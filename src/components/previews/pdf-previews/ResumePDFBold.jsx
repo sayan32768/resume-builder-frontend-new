@@ -145,7 +145,7 @@ const ResumePDFBold = ({ data, color = "#f14d34" }) => {
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={styles.page} wrap={false}>
         {/* STRIP */}
         <View style={[styles.strip, { backgroundColor: color }]} />
 

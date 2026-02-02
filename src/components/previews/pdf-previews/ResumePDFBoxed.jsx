@@ -190,7 +190,7 @@ const ResumePDFBoxed = ({ data, color = "#111827" }) => {
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={styles.page} wrap={false}>
         {/* LEFT SIDEBAR */}
         <View style={styles.left}>
           <View style={styles.sidebarSection}>

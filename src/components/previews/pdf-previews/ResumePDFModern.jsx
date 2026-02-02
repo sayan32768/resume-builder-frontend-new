@@ -154,7 +154,7 @@ const ResumePDFModern = ({ data, color }) => {
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={styles.page} wrap={false}>
         {/* LEFT COLUMN */}
         <View style={styles.leftColumn}>
           <View>
