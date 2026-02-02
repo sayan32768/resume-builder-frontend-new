@@ -376,7 +376,7 @@ const Home = () => {
                                     </div>
 
                                     {/* DOWNLOAD */}
-                                    <button
+                                    {/* <button
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         // intentionally empty
@@ -384,7 +384,7 @@ const Home = () => {
                                       className="rounded-lg bg-[#F3F7F5] p-2 text-slate-600 transition hover:cursor-pointer hover:bg-emerald-100 hover:text-emerald-700"
                                     >
                                       <Download className="h-4 w-4" />
-                                    </button>
+                                    </button> */}
                                   </div>
                                 </div>
                               </div>

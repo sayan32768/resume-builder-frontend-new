@@ -129,7 +129,7 @@ const LinksSection = ({ index }) => {
       <Button
         type="button"
         variant="outline"
-        className="mt-1 w-fit rounded-xl border-[#183D3D] text-[#183D3D] hover:bg-[#183D3D] hover:text-white"
+        className="w-fit rounded-xl border border-[#183D3D]/20 bg-[#e9fff0]/60 px-4 py-2 text-sm font-medium text-[#183D3D] shadow-none transition-all duration-200 hover:border-[#183D3D]/35 hover:bg-[#e9fff0] hover:shadow-sm focus-visible:ring-2 focus-visible:ring-[#183D3D]/25"
         onClick={() => linkAppend({ link: "" })}
       >
         + Add Link
@@ -325,7 +325,7 @@ const ProjectsForm = () => {
         <Button
           type="button"
           variant="outline"
-          className="rounded-xl border-[#183D3D] text-[#183D3D] hover:bg-[#183D3D] hover:text-white"
+          className="w-fit rounded-xl border border-[#183D3D]/20 bg-[#e9fff0]/60 px-4 py-2 text-sm font-medium text-[#183D3D] shadow-none transition-all duration-200 hover:border-[#183D3D]/35 hover:bg-[#e9fff0] hover:shadow-sm focus-visible:ring-2 focus-visible:ring-[#183D3D]/25"
           onClick={(e) => {
             e.preventDefault();
             append();

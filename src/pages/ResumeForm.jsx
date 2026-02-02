@@ -532,6 +532,7 @@ const ResumeForm = () => {
                 {/* Actions */}
                 <div className="mt-8 flex gap-3">
                   <Button
+                    disabled={submitting}
                     type="button"
                     variant="outline"
                     className="flex-1 rounded-xl border-slate-300 hover:cursor-pointer hover:bg-slate-100"
@@ -662,6 +663,7 @@ const ResumeForm = () => {
                 {/* Actions */}
                 <div className="mt-8 flex gap-3">
                   <Button
+                    disabled={submitting}
                     type="button"
                     variant="outline"
                     className="flex-1 rounded-xl border-slate-300 hover:cursor-pointer hover:bg-slate-100"
@@ -968,7 +970,7 @@ const ResumeForm = () => {
                     </div>
                   )}
                   {/* Unsaved Section */}
-                  {isEditing && !modal && (
+                  {isEditing && !modal && !draftModal && (
                     <div className="mb-6">
                       <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-red-100 bg-red-50 p-4 shadow-2xs">
                         {/* Left content */}
@@ -1059,7 +1061,7 @@ const ResumeForm = () => {
                       <Button
                         type="button"
                         variant="outline"
-                        className="flex-1 rounded-xl border-[#183D3D] text-[#183D3D] hover:cursor-pointer hover:bg-[#183D3D] hover:text-white"
+                        className="w-full flex-1 rounded-xl border border-slate-300 bg-[#F3F7F5] text-[#183D3D] shadow-none transition-all duration-200 hover:border-[#183D3D]/60 hover:bg-[#183D3D]/10 hover:text-[#183D3D] focus-visible:ring-2 focus-visible:ring-[#183D3D]/30"
                         onClick={(e) => {
                           e.preventDefault();
                           reactToPrintFn();
@@ -1098,7 +1100,7 @@ const ResumeForm = () => {
                             <Button
                               type="button"
                               variant="outline"
-                              className="w-full flex-1 rounded-xl border-[#183D3D] text-[#183D3D] hover:cursor-pointer hover:bg-[#183D3D] hover:text-white"
+                              className="w-full flex-1 rounded-xl border border-slate-300 bg-[#F3F7F5] text-[#183D3D] shadow-none transition-all duration-200 hover:border-[#183D3D]/60 hover:bg-[#183D3D]/10 hover:text-[#183D3D] focus-visible:ring-2 focus-visible:ring-[#183D3D]/30"
                               disabled={loading}
                             >
                               Download as PDF
@@ -1115,12 +1117,10 @@ const ResumeForm = () => {
                   {step === 5 && <ProjectsForm />}
                   {step === 6 && <OtherExperienceForm />}
                   {step === 7 && <CertificationForm />}
-                  <div className="flex justify-between gap-x-3 pt-4">
+                  <div className="flex justify-between gap-x-3 pt-10">
                     {step > 1 && (
                       <Button
-                        className={
-                          "flex-1 rounded-xl border-[#183D3D] bg-[#183D3D] text-white hover:cursor-pointer"
-                        }
+                        className="w-full flex-1 rounded-xl border border-slate-300 bg-[#F3F7F5] text-[#183D3D] shadow-none transition-all duration-200 hover:border-[#183D3D]/60 hover:bg-[#183D3D]/10 hover:text-[#183D3D] focus-visible:ring-2 focus-visible:ring-[#183D3D]/30"
                         type="button"
                         onClick={() => setStep((s) => s - 1)}
                       >
@@ -1130,7 +1130,7 @@ const ResumeForm = () => {
                     {step < 7 ? (
                       <Button
                         type="button"
-                        className="flex-1 rounded-xl border-[#183D3D] bg-[#183D3D] text-white hover:cursor-pointer"
+                        className="w-full flex-1 rounded-xl border border-slate-300 bg-[#F3F7F5] text-[#183D3D] shadow-none transition-all duration-200 hover:border-[#183D3D]/60 hover:bg-[#183D3D]/10 hover:text-[#183D3D] focus-visible:ring-2 focus-visible:ring-[#183D3D]/30"
                         onClick={async (e) => {
                           e.preventDefault();
                           const valid = await methods.trigger(
@@ -1159,7 +1159,7 @@ const ResumeForm = () => {
 
                           showModal(true);
                         }}
-                        className="flex-1 rounded-xl border-[#183D3D] bg-[#183D3D] text-white hover:cursor-pointer"
+                        className="flex-1 rounded-xl bg-[#183D3D] text-white shadow-sm transition-all duration-200 hover:bg-[#183D3D]/90 hover:shadow-md focus-visible:ring-2 focus-visible:ring-[#183D3D]/30 active:scale-[0.98]"
                       >
                         Save to Cloud
                       </Button>
