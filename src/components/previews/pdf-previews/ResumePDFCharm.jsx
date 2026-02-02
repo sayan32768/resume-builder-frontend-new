@@ -49,6 +49,9 @@ const styles = StyleSheet.create({
   page: {
     width: "210mm",
     height: "297mm",
+    display: "flex", // ✅ add this
+    flexDirection: "column", // ✅ add this
+    minHeight: "297mm", // ✅ add this
     backgroundColor: theme.mainBg,
     fontFamily: "Nunito Sans",
     color: theme.textDark,
@@ -57,6 +60,10 @@ const styles = StyleSheet.create({
   body: {
     flexDirection: "row",
     flex: 1,
+  },
+
+  pageContent: {
+    flex: 1, // important: fills remaining blank space
   },
 
   /* LEFT SIDEBAR */
@@ -213,139 +220,145 @@ const ResumePDFCharm = ({ data, color }) => {
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap={false}>
-        <View style={styles.body}>
-          {/* LEFT SIDEBAR */}
-          <View
-            style={[
-              styles.sidebar,
-              { backgroundColor: color || theme.sidebarBg },
-            ]}
-          >
-            <View style={styles.sidebarSection}>
-              <Text style={styles.sidebarTitle}>Profile</Text>
-              <Text style={styles.sidebarText}>{p.about || "-"}</Text>
-            </View>
-
-            {skills.length > 0 && (
+        <View style={styles.pageContent}>
+          <View style={styles.body}>
+            {/* LEFT SIDEBAR */}
+            <View
+              style={[
+                styles.sidebar,
+                { backgroundColor: color || theme.sidebarBg },
+              ]}
+            >
               <View style={styles.sidebarSection}>
-                <Text style={styles.sidebarTitle}>Skills</Text>
-                {skills.map((s, i) => (
-                  <Text key={i} style={styles.skill}>
-                    • {s.skillName}
+                <Text style={styles.sidebarTitle}>Profile</Text>
+                <Text style={styles.sidebarText}>{p.about || "-"}</Text>
+              </View>
+
+              {skills.length > 0 && (
+                <View style={styles.sidebarSection}>
+                  <Text style={styles.sidebarTitle}>Skills</Text>
+                  {skills.map((s, i) => (
+                    <Text key={i} style={styles.skill}>
+                      • {s.skillName}
+                    </Text>
+                  ))}
+                </View>
+              )}
+
+              {certifications.length > 0 && (
+                <View style={styles.sidebarSection}>
+                  <Text style={styles.sidebarTitle}>Awards & Certs</Text>
+                  {certifications.map((c, i) => (
+                    <View key={i} style={{ marginBottom: 8 }}>
+                      <Text style={{ fontSize: 11, fontWeight: 600 }}>
+                        {c.title}
+                      </Text>
+                      <Text style={{ fontSize: 10, opacity: 0.8 }}>
+                        {c.issuingAuthority}
+                        {c.issueDate &&
+                          `, ${new Date(c.issueDate).getFullYear()}`}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+
+              {p.languages?.length > 0 && (
+                <View style={styles.sidebarSection}>
+                  <Text style={styles.sidebarTitle}>Languages</Text>
+                  <Text style={styles.sidebarText}>
+                    {p.languages.join(", ")}
                   </Text>
-                ))}
-              </View>
-            )}
+                </View>
+              )}
+            </View>
 
-            {certifications.length > 0 && (
-              <View style={styles.sidebarSection}>
-                <Text style={styles.sidebarTitle}>Awards & Certs</Text>
-                {certifications.map((c, i) => (
-                  <View key={i} style={{ marginBottom: 8 }}>
-                    <Text style={{ fontSize: 11, fontWeight: 600 }}>
-                      {c.title}
-                    </Text>
-                    <Text style={{ fontSize: 10, opacity: 0.8 }}>
-                      {c.issuingAuthority}
-                      {c.issueDate &&
-                        `, ${new Date(c.issueDate).getFullYear()}`}
-                    </Text>
+            {/* RIGHT */}
+            <View style={styles.right}>
+              <View style={styles.header}>
+                <Text style={styles.name}>{p.fullName || "-"}</Text>
+                <Text style={styles.jobTitle}>Professional Profile</Text>
+              </View>
+
+              <View style={styles.content}>
+                {experience.length > 0 && (
+                  <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Work Experience</Text>
+                    {experience.map((e, i) => (
+                      <View key={i} style={styles.entry}>
+                        <View style={styles.entryRow}>
+                          <Text style={styles.entryTitle}>{e.position}</Text>
+                          <Text style={styles.entryDate}>
+                            {formatDateRange(e.dates)}
+                          </Text>
+                        </View>
+                        <Text style={styles.entrySub}>
+                          {e.companyName}
+                          {e.companyAddress && ` | ${e.companyAddress}`}
+                        </Text>
+                        {e.workDescription && (
+                          <Text style={styles.entryDesc}>
+                            {e.workDescription}
+                          </Text>
+                        )}
+                      </View>
+                    ))}
                   </View>
-                ))}
-              </View>
-            )}
+                )}
 
-            {p.languages?.length > 0 && (
-              <View style={styles.sidebarSection}>
-                <Text style={styles.sidebarTitle}>Languages</Text>
-                <Text style={styles.sidebarText}>{p.languages.join(", ")}</Text>
-              </View>
-            )}
-          </View>
-
-          {/* RIGHT */}
-          <View style={styles.right}>
-            <View style={styles.header}>
-              <Text style={styles.name}>{p.fullName || "-"}</Text>
-              <Text style={styles.jobTitle}>Professional Profile</Text>
-            </View>
-
-            <View style={styles.content}>
-              {experience.length > 0 && (
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Work Experience</Text>
-                  {experience.map((e, i) => (
-                    <View key={i} style={styles.entry}>
-                      <View style={styles.entryRow}>
-                        <Text style={styles.entryTitle}>{e.position}</Text>
-                        <Text style={styles.entryDate}>
-                          {formatDateRange(e.dates)}
+                {projects.length > 0 && (
+                  <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Projects</Text>
+                    {projects.map((p, i) => (
+                      <View key={i} style={styles.entry}>
+                        <Text style={styles.entryTitle}>
+                          {p.title || p.name}
                         </Text>
+                        {p.description && (
+                          <Text style={styles.entryDesc}>{p.description}</Text>
+                        )}
+                        {p.extraDetails && (
+                          <Text style={styles.entryDesc}>{p.extraDetails}</Text>
+                        )}
                       </View>
-                      <Text style={styles.entrySub}>
-                        {e.companyName}
-                        {e.companyAddress && ` | ${e.companyAddress}`}
-                      </Text>
-                      {e.workDescription && (
-                        <Text style={styles.entryDesc}>
-                          {e.workDescription}
-                        </Text>
-                      )}
-                    </View>
-                  ))}
-                </View>
-              )}
+                    ))}
+                  </View>
+                )}
 
-              {projects.length > 0 && (
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Projects</Text>
-                  {projects.map((p, i) => (
-                    <View key={i} style={styles.entry}>
-                      <Text style={styles.entryTitle}>{p.title || p.name}</Text>
-                      {p.description && (
-                        <Text style={styles.entryDesc}>{p.description}</Text>
-                      )}
-                      {p.extraDetails && (
-                        <Text style={styles.entryDesc}>{p.extraDetails}</Text>
-                      )}
-                    </View>
-                  ))}
-                </View>
-              )}
-
-              {education.length > 0 && (
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Educational History</Text>
-                  {education.map((e, i) => (
-                    <View key={i} style={styles.entry}>
-                      <View style={styles.entryRow}>
-                        <Text style={styles.entryTitle}>{e.name}</Text>
-                        <Text style={styles.entryDate}>
-                          {formatDateRange(e.dates)}
+                {education.length > 0 && (
+                  <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Educational History</Text>
+                    {education.map((e, i) => (
+                      <View key={i} style={styles.entry}>
+                        <View style={styles.entryRow}>
+                          <Text style={styles.entryTitle}>{e.name}</Text>
+                          <Text style={styles.entryDate}>
+                            {formatDateRange(e.dates)}
+                          </Text>
+                        </View>
+                        <Text style={styles.entrySub}>
+                          {e.degree}
+                          {e.location && ` | ${e.location}`}
                         </Text>
+                        {e.grades?.score && (
+                          <Text style={styles.entryDesc}>
+                            {e.grades.type}: {e.grades.score}
+                          </Text>
+                        )}
                       </View>
-                      <Text style={styles.entrySub}>
-                        {e.degree}
-                        {e.location && ` | ${e.location}`}
-                      </Text>
-                      {e.grades?.score && (
-                        <Text style={styles.entryDesc}>
-                          {e.grades.type}: {e.grades.score}
-                        </Text>
-                      )}
-                    </View>
-                  ))}
-                </View>
-              )}
+                    ))}
+                  </View>
+                )}
+              </View>
             </View>
           </View>
-        </View>
 
-        {/* FOOTER */}
-        <View style={styles.footer}>
-          {p.phone && <Text style={styles.footerItem}>{p.phone}</Text>}
-          {p.email && <Text style={styles.footerItem}>{p.email}</Text>}
-          {p.address && <Text style={styles.footerItem}>{p.address}</Text>}
+          {/* FOOTER */}
+          <View style={styles.footer}>
+            {p.phone && <Text style={styles.footerItem}>{p.phone}</Text>}
+            {p.email && <Text style={styles.footerItem}>{p.email}</Text>}
+            {p.address && <Text style={styles.footerItem}>{p.address}</Text>}
+          </View>
         </View>
       </Page>
     </Document>

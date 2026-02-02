@@ -27,6 +27,8 @@ Font.register({
 const styles = StyleSheet.create({
   page: {
     flexDirection: "row",
+    display: "flex", // ✅ add this
+    minHeight: "297mm", // ✅ add this
     width: "210mm",
     height: "297mm",
     backgroundColor: "#ffffff",

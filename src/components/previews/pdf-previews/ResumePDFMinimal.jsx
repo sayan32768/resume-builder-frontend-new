@@ -22,12 +22,19 @@ const styles = StyleSheet.create({
   page: {
     width: "210mm",
     height: "297mm",
+    display: "flex", // ✅ add this
+    flexDirection: "column", // ✅ add this
+    minHeight: "297mm", // ✅ add this
     paddingTop: 38,
     paddingBottom: 38,
     paddingHorizontal: 44,
     fontFamily: "Noto Sans",
     color: "#111827",
     backgroundColor: "#ffffff",
+  },
+
+  pageContent: {
+    flex: 1, // important: fills remaining blank space
   },
 
   /* HEADER */
@@ -153,159 +160,161 @@ const ResumePDFMinimal = ({ data, color = "#111827" }) => {
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap={false}>
-        {/* HEADER */}
-        <View style={styles.header}>
-          <Text style={styles.name}>{personal.fullName || "-"}</Text>
+        <View style={styles.pageContent}>
+          {/* HEADER */}
+          <View style={styles.header}>
+            <Text style={styles.name}>{personal.fullName || "-"}</Text>
 
-          {personal.about && (
-            <Text style={styles.subtitle}>{personal.about}</Text>
+            {personal.about && (
+              <Text style={styles.subtitle}>{personal.about}</Text>
+            )}
+
+            <View style={styles.contactRow}>
+              {personal.email && <Text>{personal.email}</Text>}
+              {personal.phone && <Text>{personal.phone}</Text>}
+              {personal.address && <Text>{personal.address}</Text>}
+            </View>
+          </View>
+
+          <View style={styles.divider} />
+
+          {/* EXPERIENCE */}
+          {experience.length > 0 && (
+            <>
+              <View style={styles.sectionTitle}>
+                <Text style={{ color }}>Experience</Text>
+                <View style={styles.sectionLine} />
+              </View>
+
+              {experience.map((exp, i) => (
+                <View key={i} style={styles.block}>
+                  <Text style={styles.role}>{exp.position || "-"}</Text>
+                  <Text style={styles.meta}>
+                    {exp.companyName}
+                    {exp.companyAddress && ` · ${exp.companyAddress}`}
+                    {formatYearRange(exp.dates) &&
+                      ` · ${formatYearRange(exp.dates)}`}
+                  </Text>
+                  {exp.workDescription && (
+                    <Text style={styles.desc}>{exp.workDescription}</Text>
+                  )}
+                </View>
+              ))}
+            </>
           )}
 
-          <View style={styles.contactRow}>
-            {personal.email && <Text>{personal.email}</Text>}
-            {personal.phone && <Text>{personal.phone}</Text>}
-            {personal.address && <Text>{personal.address}</Text>}
-          </View>
-        </View>
-
-        <View style={styles.divider} />
-
-        {/* EXPERIENCE */}
-        {experience.length > 0 && (
-          <>
-            <View style={styles.sectionTitle}>
-              <Text style={{ color }}>Experience</Text>
-              <View style={styles.sectionLine} />
-            </View>
-
-            {experience.map((exp, i) => (
-              <View key={i} style={styles.block}>
-                <Text style={styles.role}>{exp.position || "-"}</Text>
-                <Text style={styles.meta}>
-                  {exp.companyName}
-                  {exp.companyAddress && ` · ${exp.companyAddress}`}
-                  {formatYearRange(exp.dates) &&
-                    ` · ${formatYearRange(exp.dates)}`}
-                </Text>
-                {exp.workDescription && (
-                  <Text style={styles.desc}>{exp.workDescription}</Text>
-                )}
+          {/* PROJECTS */}
+          {projects.length > 0 && (
+            <>
+              <View style={styles.sectionTitle}>
+                <Text style={{ color }}>Projects</Text>
+                <View style={styles.sectionLine} />
               </View>
-            ))}
-          </>
-        )}
 
-        {/* PROJECTS */}
-        {projects.length > 0 && (
-          <>
-            <View style={styles.sectionTitle}>
-              <Text style={{ color }}>Projects</Text>
-              <View style={styles.sectionLine} />
-            </View>
-
-            {projects.map((p, i) => (
-              <View key={i} style={styles.block}>
-                <Text style={styles.role}>{p.title || p.name}</Text>
-                {p.description && (
-                  <Text style={styles.desc}>{p.description}</Text>
-                )}
-                {p.extraDetails && (
-                  <Text style={styles.desc}>{p.extraDetails}</Text>
-                )}
-              </View>
-            ))}
-          </>
-        )}
-
-        {/* EDUCATION */}
-        {education.length > 0 && (
-          <>
-            <View style={styles.sectionTitle}>
-              <Text style={{ color }}>Education</Text>
-              <View style={styles.sectionLine} />
-            </View>
-
-            {education.map((edu, i) => (
-              <View key={i} style={styles.block}>
-                <Text style={styles.role}>
-                  {edu.degree}
-                  {edu.name && ` · ${edu.name}`}
-                </Text>
-                <Text style={styles.meta}>
-                  {edu.location}
-                  {formatYearRange(edu.dates) &&
-                    ` · ${formatYearRange(edu.dates)}`}
-                </Text>
-                {edu.grades?.score && (
-                  <Text style={styles.desc}>
-                    {edu.grades.type}: {edu.grades.score}
-                  </Text>
-                )}
-              </View>
-            ))}
-          </>
-        )}
-
-        {/* SKILLS */}
-        {skills.length > 0 && (
-          <>
-            <View style={styles.sectionTitle}>
-              <Text style={{ color }}>Skills</Text>
-              <View style={styles.sectionLine} />
-            </View>
-
-            <View style={styles.skillsRow}>
-              {skills.map((s, i) => (
-                <Text key={i}>
-                  {s.skillName}
-                  {i !== skills.length - 1 && " · "}
-                </Text>
+              {projects.map((p, i) => (
+                <View key={i} style={styles.block}>
+                  <Text style={styles.role}>{p.title || p.name}</Text>
+                  {p.description && (
+                    <Text style={styles.desc}>{p.description}</Text>
+                  )}
+                  {p.extraDetails && (
+                    <Text style={styles.desc}>{p.extraDetails}</Text>
+                  )}
+                </View>
               ))}
-            </View>
-          </>
-        )}
+            </>
+          )}
 
-        {/* CERTIFICATIONS */}
-        {certifications.length > 0 && (
-          <>
-            <View style={styles.sectionTitle}>
-              <Text style={{ color }}>Certifications</Text>
-              <View style={styles.sectionLine} />
-            </View>
-
-            {certifications.map((c, i) => (
-              <View key={i} style={styles.block}>
-                <Text style={styles.role}>{c.title}</Text>
-                <Text style={styles.meta}>
-                  {c.issuingAuthority}
-                  {c.issueDate && ` · ${new Date(c.issueDate).getFullYear()}`}
-                </Text>
+          {/* EDUCATION */}
+          {education.length > 0 && (
+            <>
+              <View style={styles.sectionTitle}>
+                <Text style={{ color }}>Education</Text>
+                <View style={styles.sectionLine} />
               </View>
-            ))}
-          </>
-        )}
 
-        {/* OTHER EXPERIENCE */}
-        {otherExp.length > 0 && (
-          <>
-            <View style={styles.sectionTitle}>
-              <Text style={{ color }}>Other Experience</Text>
-              <View style={styles.sectionLine} />
-            </View>
-
-            {otherExp.map((exp, i) => (
-              <View key={i} style={styles.block}>
-                <Text style={styles.role}>{exp.position}</Text>
-                <Text style={styles.meta}>{exp.companyName}</Text>
-                {exp.workDescription && (
-                  <Text style={styles.desc} wrap={false}>
-                    {exp.workDescription}
+              {education.map((edu, i) => (
+                <View key={i} style={styles.block}>
+                  <Text style={styles.role}>
+                    {edu.degree}
+                    {edu.name && ` · ${edu.name}`}
                   </Text>
-                )}
+                  <Text style={styles.meta}>
+                    {edu.location}
+                    {formatYearRange(edu.dates) &&
+                      ` · ${formatYearRange(edu.dates)}`}
+                  </Text>
+                  {edu.grades?.score && (
+                    <Text style={styles.desc}>
+                      {edu.grades.type}: {edu.grades.score}
+                    </Text>
+                  )}
+                </View>
+              ))}
+            </>
+          )}
+
+          {/* SKILLS */}
+          {skills.length > 0 && (
+            <>
+              <View style={styles.sectionTitle}>
+                <Text style={{ color }}>Skills</Text>
+                <View style={styles.sectionLine} />
               </View>
-            ))}
-          </>
-        )}
+
+              <View style={styles.skillsRow}>
+                {skills.map((s, i) => (
+                  <Text key={i}>
+                    {s.skillName}
+                    {i !== skills.length - 1 && " · "}
+                  </Text>
+                ))}
+              </View>
+            </>
+          )}
+
+          {/* CERTIFICATIONS */}
+          {certifications.length > 0 && (
+            <>
+              <View style={styles.sectionTitle}>
+                <Text style={{ color }}>Certifications</Text>
+                <View style={styles.sectionLine} />
+              </View>
+
+              {certifications.map((c, i) => (
+                <View key={i} style={styles.block}>
+                  <Text style={styles.role}>{c.title}</Text>
+                  <Text style={styles.meta}>
+                    {c.issuingAuthority}
+                    {c.issueDate && ` · ${new Date(c.issueDate).getFullYear()}`}
+                  </Text>
+                </View>
+              ))}
+            </>
+          )}
+
+          {/* OTHER EXPERIENCE */}
+          {otherExp.length > 0 && (
+            <>
+              <View style={styles.sectionTitle}>
+                <Text style={{ color }}>Other Experience</Text>
+                <View style={styles.sectionLine} />
+              </View>
+
+              {otherExp.map((exp, i) => (
+                <View key={i} style={styles.block}>
+                  <Text style={styles.role}>{exp.position}</Text>
+                  <Text style={styles.meta}>{exp.companyName}</Text>
+                  {exp.workDescription && (
+                    <Text style={styles.desc} wrap={false}>
+                      {exp.workDescription}
+                    </Text>
+                  )}
+                </View>
+              ))}
+            </>
+          )}
+        </View>
       </Page>
     </Document>
   );
