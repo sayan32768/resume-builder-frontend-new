@@ -3,7 +3,7 @@ import React from "react";
 const MinimalTemplatePreview = ({ color = "#183D3D", variant = "card" }) => {
   const size =
     variant === "thumbnail"
-      ? { width: 455, height: 320 }
+      ? { width: 440, height: 320 }
       : { width: "100%", height: "100%" };
 
   return (

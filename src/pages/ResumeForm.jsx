@@ -412,6 +412,7 @@ const ResumeForm = () => {
     );
   }
 
+  // TODO: Uncomment error handling UI
   if (errors) {
     return (
       <div className="mx-auto mt-12 max-w-lg rounded-3xl border border-red-200 bg-red-50/70 p-8 text-center shadow-sm backdrop-blur">
@@ -710,7 +711,7 @@ const ResumeForm = () => {
           )}
 
           {/* Track */}
-          <div className="absolute top-[18px] left-[calc(50%/7)] z-20 h-[2px] w-[calc(100%-50%/7*2)] bg-transparent md:hidden">
+          <div className="absolute top-[18px] left-[calc(50%/7)] z-5 h-[2px] w-[calc(100%-50%/7*2)] bg-transparent md:hidden">
             <div
               className="h-[2px] bg-[#183D3D] transition-all duration-300"
               style={{
@@ -769,10 +770,10 @@ const ResumeForm = () => {
               </svg>
 
               {/* GLASS OVERLAY */}
-              <div className="g-white/30 absolute inset-0 z-10 h-full backdrop-blur-md" />
+              <div className="g-white/30 absolute inset-0 z-2 h-full backdrop-blur-md" />
 
               {/* MAIN CONTENT */}
-              <div className="relative z-10 flex w-full flex-col items-center pt-10 max-md:hidden">
+              <div className="relative z-2 flex w-full flex-col items-center pt-10 max-md:hidden">
                 <div className="relative flex w-full max-w-4xl justify-between">
                   {stepNames.map((s, index) => {
                     const isCompleted = s.id < step;
@@ -834,7 +835,7 @@ const ResumeForm = () => {
                   })}
 
                   {/* Track */}
-                  <div className="absolute top-[18px] left-0 -z-10 h-[2px] w-full bg-[#E6F0EC]">
+                  <div className="absolute top-[18px] left-0 -z-1 h-[2px] w-full bg-[#E6F0EC]">
                     <div
                       className="h-[2px] bg-[#183D3D] transition-all duration-300"
                       style={{
@@ -853,7 +854,9 @@ const ResumeForm = () => {
                   >
                     <div className="flex flex-row gap-x-3 text-[#183D3D]">
                       <ArrowLeft />
-                      <div className="text-[#183D3D]">Go back to home</div>
+                      <div className="cursor-pointer text-[#183D3D] hover:underline">
+                        Go back to home
+                      </div>
                     </div>
                   </div>
                   {/* TITLE SECTION */}
@@ -1037,7 +1040,7 @@ const ResumeForm = () => {
                     <div className="flex flex-row justify-between">
                       <div
                         onClick={openModal}
-                        className="relative mb-6 h-12 w-12 rounded-xl border-2 border-[#91afaf] hover:cursor-pointer md:hidden"
+                        className="relative mb-6 ml-2 h-12 w-12 rounded-xl border-2 border-[#91afaf] hover:cursor-pointer md:hidden"
                       >
                         <MenuIcon className="absolute mx-[22%] my-[22%] text-[#245a5a]" />
                       </div>
@@ -1046,7 +1049,7 @@ const ResumeForm = () => {
                         <Button
                           type="button"
                           variant="outline"
-                          className="rounded-xl border-[#183D3D] text-[#183D3D] hover:cursor-pointer hover:bg-[#183D3D] hover:text-white md:hidden"
+                          className="w-full flex-1 rounded-xl border border-slate-300 bg-[#F3F7F5] text-[#183D3D] shadow-none transition-all duration-200 hover:border-[#183D3D]/60 hover:bg-[#183D3D]/10 hover:text-[#183D3D] focus-visible:ring-2 focus-visible:ring-[#183D3D]/30 md:hidden"
                           onClick={(e) => {
                             e.preventDefault();
                             setBackdrop(true);
@@ -1173,7 +1176,7 @@ const ResumeForm = () => {
                       e.preventDefault();
                       setBackdrop(false);
                     }}
-                    className="fixed inset-0 bg-white text-center md:hidden"
+                    className="fixed inset-0 text-center backdrop-blur-3xl md:hidden"
                   >
                     {/* <div className="relative mt-7">Click anywhere to close</div> */}
                   </div>
@@ -1202,7 +1205,24 @@ const ResumeForm = () => {
                     />
                   </div>
 
-                  <div className="max-md:h-[calc(297mm*0.44)] max-md:w-[calc(210mm*0.44)] md:h-[calc(297mm*0.7)] md:w-[calc(210mm*0.7)]">
+                  <div className="mb-4 flex flex-col items-center justify-between gap-4 md:hidden">
+                    <AccentColorSwitcher
+                      colors={colors}
+                      activeColor={accentColor}
+                      changeColor={setAccentColor}
+                    />
+
+                    <div className="ml-auto">
+                      <TemplateSwitcher
+                        templates={RESUME_TEMPLATES}
+                        activeTemplate={resumeType}
+                        onChange={(name) => switchResumeType(name)}
+                        color={methods.getValues().accentColor}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="origin-top-left overflow-hidden rounded-xl border border-slate-300 bg-white shadow-lg max-md:h-[calc(297mm*0.44)] max-md:w-[calc(210mm*0.44)] md:h-[calc(297mm*0.7)] md:w-[calc(210mm*0.7)]">
                     <div className="h-[297mm] w-[210mm] origin-top-left outline-1 max-md:scale-[0.44] md:scale-[0.7]">
                       <div id="resume-preview" ref={resumeRef}>
                         {renderResumePreview(resumeType, accentColor)}
@@ -1213,7 +1233,7 @@ const ResumeForm = () => {
                     <Button
                       type="button"
                       variant="outline"
-                      className="my-8 rounded-xl border-[#183D3D] text-[#183D3D] hover:cursor-pointer hover:bg-[#183D3D] hover:text-white"
+                      className="my-8 w-full flex-1 rounded-xl border border-slate-300 bg-[#F3F7F5] text-[#183D3D] shadow-none transition-all duration-200 hover:border-[#183D3D]/60 hover:bg-[#183D3D]/10 hover:text-[#183D3D] focus-visible:ring-2 focus-visible:ring-[#183D3D]/30"
                       onClick={(e) => {
                         e.preventDefault();
                         setBackdrop(false);

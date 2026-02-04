@@ -153,6 +153,7 @@ const MONTHS = [
 
 export function DatePicker({ field }) {
   const [open, setOpen] = React.useState(false);
+  const [yearOpen, setYearOpen] = React.useState(false);
 
   const selectedDate = React.useMemo(
     () => fromYMDMonthStart(field.value),
@@ -162,6 +163,23 @@ export function DatePicker({ field }) {
   const [year, setYear] = React.useState(() =>
     selectedDate ? selectedDate.getFullYear() : new Date().getFullYear(),
   );
+
+  const activeYearRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (!yearOpen) return;
+
+    // Wait until PopoverContent is mounted + layout is done
+    const id = requestAnimationFrame(() => {
+      setTimeout(() => {
+        activeYearRef.current?.scrollIntoView({
+          block: "center",
+        });
+      }, 0);
+    });
+
+    return () => cancelAnimationFrame(id);
+  }, [yearOpen]);
 
   // keep year in sync with selected value (important for hydration + reset)
   React.useEffect(() => {
@@ -189,26 +207,66 @@ export function DatePicker({ field }) {
       </PopoverTrigger>
 
       <PopoverContent
-        className="w-auto overflow-hidden rounded-lg border bg-white p-3 shadow-md"
+        className="w-auto overflow-hidden rounded-lg border border-slate-300 bg-white p-3 shadow-lg"
         align="start"
+        onOpenAutoFocus={(e) => e.preventDefault()}
       >
-        {/* YEAR CONTROLS */}
         <div className="mb-3 flex items-center justify-between gap-2">
           <Button
             type="button"
             variant="outline"
-            className="h-8 px-3"
+            className="h-9 rounded-lg border-slate-300 px-3 font-normal hover:ring-2 hover:ring-[#183D3D]/30 focus:ring-2 focus:ring-[#183D3D]/30"
             onClick={() => setYear((y) => Math.max(1900, y - 1))}
           >
             Prev
           </Button>
 
-          <div className="text-sm font-semibold">{year}</div>
+          {/* ✅ Year dropdown */}
+          <Popover open={yearOpen} onOpenChange={setYearOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-9 rounded-lg border-slate-300 px-3 font-semibold hover:ring-2 hover:ring-[#183D3D]/30 focus:ring-2 focus:ring-[#183D3D]/30"
+              >
+                {year}
+                <ChevronDownIcon className="ml-2 h-4 w-4 opacity-70" />
+              </Button>
+            </PopoverTrigger>
+
+            <PopoverContent
+              className="w-[140px] border-slate-300 bg-white p-2 shadow-md hover:overflow-y-auto"
+              align="center"
+            >
+              <div className="max-h-[220px] overflow-y-auto rounded-md">
+                {Array.from({ length: 151 }).map((_, idx) => {
+                  const y = 1900 + idx; // 1900 to 2050
+                  const isActive = y === year;
+
+                  return (
+                    <Button
+                      ref={isActive ? activeYearRef : null}
+                      key={y}
+                      type="button"
+                      variant={y === year ? "default" : "ghost"}
+                      className="h-9 w-full justify-start hover:bg-black/10"
+                      onClick={() => {
+                        setYear(y);
+                        setYearOpen(false);
+                      }}
+                    >
+                      {y}
+                    </Button>
+                  );
+                })}
+              </div>
+            </PopoverContent>
+          </Popover>
 
           <Button
             type="button"
             variant="outline"
-            className="h-8 px-3"
+            className="h-9 rounded-lg border-slate-300 px-3 font-normal hover:ring-2 hover:ring-[#183D3D]/30 focus:ring-2 focus:ring-[#183D3D]/30"
             onClick={() => setYear((y) => Math.min(2050, y + 1))}
           >
             Next
@@ -227,8 +285,8 @@ export function DatePicker({ field }) {
               <Button
                 key={monthName}
                 type="button"
-                variant={active ? "default" : "outline"}
-                className="h-9 rounded-lg"
+                variant={"outline"}
+                className={`h-9 rounded-lg border-slate-300 px-3 font-normal hover:ring-2 hover:ring-[#183D3D]/30 focus:ring-2 focus:ring-[#183D3D]/30 ${active ? "ring-2 ring-[#183D3D]/30" : ""}`}
                 onClick={() => {
                   // ✅ Save as YYYY-MM-01 for backend
                   const dateValue = `${year}-${mm}-01`;
@@ -246,7 +304,7 @@ export function DatePicker({ field }) {
         <Button
           type="button"
           variant="outline"
-          className="mt-3 w-full"
+          className={`mt-4 h-9 w-full rounded-lg border-slate-300 px-3 font-normal hover:ring-2 hover:ring-[#183D3D]/30 focus:ring-2 focus:ring-[#183D3D]/30`}
           onClick={() => {
             field.onChange(null);
             setOpen(false);

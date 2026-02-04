@@ -3,7 +3,7 @@ import React from "react";
 const CharmTemplatePreview = ({ color = "#8F9B8F", variant = "card" }) => {
   const size =
     variant === "thumbnail"
-      ? { width: 455, height: 320 }
+      ? { width: 470, height: 320 }
       : { width: "100%", height: "100%" };
 
   return (

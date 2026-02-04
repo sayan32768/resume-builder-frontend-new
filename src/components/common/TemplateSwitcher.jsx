@@ -36,7 +36,7 @@ const TemplateSwitcher = ({ templates, activeTemplate, onChange, color }) => {
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute -left-[240px] z-50 mt-2 w-[420px] rounded-2xl border border-slate-200 bg-white shadow-xl">
+        <div className="absolute -left-[265px] z-50 mt-2 w-[380px] rounded-2xl border border-slate-200 bg-white shadow-xl">
           <ul className="space-y-1 p-2">
             {templates.map((template) => {
               const Preview = template.Preview;
@@ -54,11 +54,11 @@ const TemplateSwitcher = ({ templates, activeTemplate, onChange, color }) => {
                     }`}
                   >
                     {/* JSX Thumbnail */}
-                    <div className="flex h-[90px] w-[128px] items-center justify-center overflow-hidden rounded-md bg-[#183D3D]/20">
+                    <div className="flex h-[90px] w-[140px] items-center justify-center overflow-hidden rounded-md bg-[#183D3D]/20">
                       <div
                         className="pointer-events-none"
                         style={{
-                          width: 450,
+                          width: 470,
                           height: 318,
                           transform: "scale(0.28)",
                           transformOrigin: "center",
