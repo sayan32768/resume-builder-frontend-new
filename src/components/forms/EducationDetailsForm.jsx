@@ -132,7 +132,7 @@ const EducationDetailsForm = () => {
           )}
 
           {/* ADDITIONAL INFO */}
-          <div className="flex flex-col gap-4 rounded-2xl bg-[#e9fff0]/30 p-4">
+          {/* <div className="flex flex-col gap-4 rounded-2xl bg-[#e9fff0]/30 p-4">
             <Label className="text-sm font-medium text-slate-600">
               Additional Info
             </Label>
@@ -146,7 +146,7 @@ const EducationDetailsForm = () => {
                 {errors.educationDetails[index].grades.message.message}
               </p>
             )}
-          </div>
+          </div> */}
 
           {/* DATES */}
           <div className="flex flex-row gap-4 rounded-2xl bg-[#e9fff0]/30 p-4">

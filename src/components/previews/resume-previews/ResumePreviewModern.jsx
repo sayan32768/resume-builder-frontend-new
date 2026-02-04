@@ -21,6 +21,7 @@ const ResumePreviewModern = ({ color }) => {
 
       .resume-preview * {
         font-family: "Nunito Sans", serif !important;
+        line-height: 1.8;
       }
 
       .resume-preview {
@@ -54,11 +55,11 @@ const ResumePreviewModern = ({ color }) => {
         font-weight: 600;
         margin-bottom: 12px;
         letter-spacing: 0.1em;
-        font-size: 12px;
+        font-size: 15px;
       }
 
       .left-column ul {
-        font-size: 12px;
+        font-size: 15px;
         line-height: 1.5;
         margin: 0;
         padding: 0;
@@ -66,7 +67,7 @@ const ResumePreviewModern = ({ color }) => {
       }
 
       .left-column div {
-        font-size: 12px;
+        font-size: 15px;
         margin-bottom: 8px;
       }
 
@@ -103,7 +104,7 @@ const ResumePreviewModern = ({ color }) => {
 
       /* FIXED: dark text on white */
       .right-column header h1 {
-        font-size: 24px;
+        font-size: 28px;
         font-weight: 700;
         color: #1f2937;
         letter-spacing: 0.1em;
@@ -113,7 +114,7 @@ const ResumePreviewModern = ({ color }) => {
 
       .right-column header p {
         text-align: left;
-        font-size: 12px;
+        font-size: 15px;
         letter-spacing: 0.3em;
         color: #4b5563;
         margin-top: 4px;
@@ -130,7 +131,7 @@ const ResumePreviewModern = ({ color }) => {
         font-weight: 600;
         margin-bottom: 8px;
         letter-spacing: 0.1em;
-        font-size: 12px;
+        font-size: 15px;
       }
 
       .right-column div {
@@ -138,7 +139,7 @@ const ResumePreviewModern = ({ color }) => {
       }
 
       .right-column div p {
-        font-size: 12px;
+        font-size: 15px;
         margin: 0;
       }
 
@@ -160,7 +161,7 @@ const ResumePreviewModern = ({ color }) => {
       }
 
       .right-column ul {
-        font-size: 12px;
+        font-size: 15px;
         list-style-type: disc;
         padding-left: 16px;
         margin: 0;
@@ -183,7 +184,20 @@ const ResumePreviewModern = ({ color }) => {
                 {personal.address && <li>{personal.address}</li>}
                 {personal.socials?.map((s, i) => (
                   <li key={i}>
-                    {s.name}: {s.link || "-"}
+                    {s.link ? (
+                      <>
+                        <a
+                          href={s.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {s.name}
+                        </a>
+                      </>
+                    ) : (
+                      `${s.name}`
+                    )}
+                    {s.link ? null : "-"}
                   </li>
                 ))}
               </ul>
@@ -214,17 +228,34 @@ const ResumePreviewModern = ({ color }) => {
                   {(edu.dates?.startDate || edu.dates?.endDate) && (
                     <p className="text-sm text-slate-700">
                       {edu.dates?.startDate && edu.dates?.endDate
-                        ? `${new Date(
-                            edu.dates.startDate,
-                          ).getFullYear()} - ${new Date(
-                            edu.dates.endDate,
-                          ).getFullYear()}`
+                        ? `${new Date(edu.dates.startDate).toLocaleString(
+                            undefined,
+                            {
+                              month: "short",
+                              year: "numeric",
+                            },
+                          )} - ${new Date(edu.dates.endDate).toLocaleString(
+                            undefined,
+                            {
+                              month: "short",
+                              year: "numeric",
+                            },
+                          )}`
                         : edu.dates?.startDate
-                          ? `${new Date(
-                              edu.dates.startDate,
-                            ).getFullYear()} - Present`
+                          ? `${new Date(edu.dates.startDate).toLocaleString(
+                              undefined,
+                              {
+                                month: "short",
+                                year: "numeric",
+                              },
+                            )} - Present`
                           : edu.dates?.endDate
-                            ? `Ended ${new Date(edu.dates.endDate).getFullYear()}`
+                            ? `Ended ${new Date(
+                                edu.dates.endDate,
+                              ).toLocaleString(undefined, {
+                                month: "short",
+                                year: "numeric",
+                              })}`
                             : ""}
                     </p>
                   )}
@@ -258,18 +289,24 @@ const ResumePreviewModern = ({ color }) => {
                 <div key={i}>
                   {cert.issueDate && (
                     <p className="italic">
-                      ({new Date(cert.issueDate).getFullYear()})
+                      (
+                      {new Date(cert.issueDate).toLocaleString(undefined, {
+                        month: "short",
+                        year: "numeric",
+                      })}
+                      )
                     </p>
                   )}
                   <p className="bold">{cert.title}</p>
                   <p>{cert.issuingAuthority}</p>
+
                   {cert.link && (
                     <a
                       href={cert.link}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {cert.link}
+                      Link
                     </a>
                   )}
                 </div>
@@ -281,7 +318,9 @@ const ResumePreviewModern = ({ color }) => {
       <div className="right-column">
         <header>
           <h1>{personal.fullName || "-"}</h1>
-          {personal.about && <p>{personal.about}</p>}
+          {personal.about && (
+            <p style={{ lineHeight: 1.2 }}>{personal.about}</p>
+          )}
         </header>
         {experience.length > 0 && (
           <section>
@@ -289,15 +328,27 @@ const ResumePreviewModern = ({ color }) => {
             {experience.map((exp, i) => (
               <div key={i}>
                 {exp.dates?.startDate && exp.dates?.endDate
-                  ? `${new Date(
-                      exp.dates.startDate,
-                    ).getFullYear()} - ${new Date(
-                      exp.dates.endDate,
-                    ).getFullYear()}`
+                  ? `${new Date(exp.dates.startDate).toLocaleString(undefined, {
+                      month: "short",
+                      year: "numeric",
+                    })} - ${new Date(exp.dates.endDate).toLocaleString(
+                      undefined,
+                      {
+                        month: "short",
+                        year: "numeric",
+                      },
+                    )}`
                   : exp.dates?.startDate
-                    ? new Date(exp.dates.startDate).getFullYear() + "- Present"
+                    ? new Date(exp.dates.startDate).toLocaleString(undefined, {
+                        month: "short",
+                        year: "numeric",
+                      }) + "- Present"
                     : exp.dates?.endDate
-                      ? "End Date-" + new Date(exp.dates.endDate).getFullYear()
+                      ? "End Date-" +
+                        new Date(exp.dates.endDate).toLocaleString(undefined, {
+                          month: "short",
+                          year: "numeric",
+                        })
                       : ""}
                 <p className="bold">{exp.position || "-"}</p>
                 <p className="italic">
@@ -324,7 +375,7 @@ const ResumePreviewModern = ({ color }) => {
                   <p className="description">{item.extraDetails}</p>
                 )}
                 {item.links?.length > 0 && (
-                  <ul>
+                  <ul style={{ listStyleType: "none", paddingLeft: 0 }}>
                     {item.links.map((l, idx) => (
                       <li key={idx}>
                         <a
@@ -332,7 +383,7 @@ const ResumePreviewModern = ({ color }) => {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          {l.link}
+                          Link
                         </a>
                       </li>
                     ))}
@@ -348,15 +399,27 @@ const ResumePreviewModern = ({ color }) => {
             {otherExp.map((exp, i) => (
               <div key={i}>
                 {exp.dates?.startDate && exp.dates?.endDate
-                  ? `${new Date(
-                      exp.dates.startDate,
-                    ).getFullYear()} - ${new Date(
-                      exp.dates.endDate,
-                    ).getFullYear()}`
+                  ? `${new Date(exp.dates.startDate).toLocaleString(undefined, {
+                      month: "short",
+                      year: "numeric",
+                    })} - ${new Date(exp.dates.endDate).toLocaleString(
+                      undefined,
+                      {
+                        month: "short",
+                        year: "numeric",
+                      },
+                    )}`
                   : exp.dates?.startDate
-                    ? new Date(exp.dates.startDate).getFullYear() + "- Present"
+                    ? new Date(exp.dates.startDate).toLocaleString(undefined, {
+                        month: "short",
+                        year: "numeric",
+                      }) + "- Present"
                     : exp.dates?.endDate
-                      ? "End Date-" + new Date(exp.dates.endDate).getFullYear()
+                      ? "End Date-" +
+                        new Date(exp.dates.endDate).toLocaleString(undefined, {
+                          month: "short",
+                          year: "numeric",
+                        })
                       : ""}
                 <p className="bold">{exp.position || "-"}</p>
                 <p className="italic">

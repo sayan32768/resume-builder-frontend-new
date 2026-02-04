@@ -6,7 +6,6 @@ import {
   MapPin,
   Linkedin,
   Github,
-  Twitter,
   Globe,
   ExternalLink,
 } from "lucide-react";
@@ -30,9 +29,23 @@ const ResumePreviewBoxed = ({ color = "#111827" }) => {
     const start = startDate ? new Date(startDate) : null;
     const end = endDate ? new Date(endDate) : null;
     if (start && end && !isNaN(start) && !isNaN(end))
-      return `${start.getFullYear()} - ${end.getFullYear()}`;
-    if (start && !isNaN(start)) return `${start.getFullYear()} - Present`;
-    if (end && !isNaN(end)) return `Ended ${end.getFullYear()}`;
+      return `${start.toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })} - ${end.toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })}`;
+    if (start && !isNaN(start))
+      return `${start.toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })} - Present`;
+    if (end && !isNaN(end))
+      return `Ended ${end.toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })}`;
     return "";
   };
 
@@ -272,7 +285,11 @@ const ResumePreviewBoxed = ({ color = "#111827" }) => {
                     color: "#888",
                   }}
                 >
-                  {cert.issueDate && new Date(cert.issueDate).getFullYear()}
+                  {cert.issueDate &&
+                    new Date(cert.issueDate).toLocaleString(undefined, {
+                      month: "short",
+                      year: "numeric",
+                    })}
                 </div>
               </div>
             ))}

@@ -1,5 +1,12 @@
 import React from "react";
-import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
+import {
+  Page,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+  Link,
+} from "@react-pdf/renderer";
 import { Font } from "@react-pdf/renderer";
 
 Font.register({
@@ -111,7 +118,7 @@ const styles = StyleSheet.create({
 
   rightTitle: {
     textTransform: "uppercase",
-    color: "#b37d6b",
+    color: "#1f2937",
     fontWeight: 600,
     marginBottom: 8,
     letterSpacing: 1,
@@ -145,12 +152,23 @@ const ResumePDFModern = ({ data, color }) => {
   const yearRange = (dates) => {
     if (!dates) return "";
     if (dates.startDate && dates.endDate)
-      return `${new Date(dates.startDate).getFullYear()} - ${new Date(
-        dates.endDate,
-      ).getFullYear()}`;
+      return `${new Date(dates.startDate).toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })} - ${new Date(dates.endDate).toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })}`;
     if (dates.startDate)
-      return `${new Date(dates.startDate).getFullYear()} - Present`;
-    if (dates.endDate) return `Ended ${new Date(dates.endDate).getFullYear()}`;
+      return `${new Date(dates.startDate).toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })} - Present`;
+    if (dates.endDate)
+      return `Ended ${new Date(dates.endDate).toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })}`;
     return "";
   };
 
@@ -174,7 +192,13 @@ const ResumePDFModern = ({ data, color }) => {
               )}
               {(personal.socials || []).map((s, i) => (
                 <Text key={i} style={styles.leftText}>
-                  {s.name}: {s.link || "-"}
+                  {s.link ? (
+                    <Link style={[{ color: color }]} src={s.link}>
+                      {s.name}
+                    </Link>
+                  ) : (
+                    `${s.name}: -`
+                  )}
                 </Text>
               ))}
             </View>
@@ -240,7 +264,12 @@ const ResumePDFModern = ({ data, color }) => {
                   <View key={i} style={{ marginBottom: 8 }}>
                     {cert.issueDate && (
                       <Text style={[styles.leftText, styles.italic]}>
-                        ({new Date(cert.issueDate).getFullYear()})
+                        (
+                        {new Date(cert.issueDate).toLocaleString(undefined, {
+                          month: "short",
+                          year: "numeric",
+                        })}
+                        )
                       </Text>
                     )}
                     <Text style={[styles.leftText, styles.bold]}>
@@ -248,11 +277,12 @@ const ResumePDFModern = ({ data, color }) => {
                     </Text>
                     <Text style={styles.leftText}>{cert.issuingAuthority}</Text>
                     {cert.link && (
-                      <Text
+                      <Link
+                        src={cert.link}
                         style={[styles.leftText, styles.link, { color: color }]}
                       >
-                        {cert.link}
-                      </Text>
+                        Link
+                      </Link>
                     )}
                   </View>
                 ))}
@@ -311,12 +341,13 @@ const ResumePDFModern = ({ data, color }) => {
                     <Text style={styles.description}>{p.extraDetails}</Text>
                   )}
                   {(p.links || []).map((l, idx) => (
-                    <Text
+                    <Link
                       key={idx}
+                      src={l.link}
                       style={[styles.leftText, styles.link, { color: color }]}
                     >
-                      {l.link}
-                    </Text>
+                      Link
+                    </Link>
                   ))}
                 </View>
               ))}

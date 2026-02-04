@@ -1,6 +1,20 @@
 import React from "react";
-import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Link,
+  Image,
+} from "@react-pdf/renderer";
 import { Font } from "@react-pdf/renderer";
+import MailIcon from "../../../icons/mail-dark.png";
+import GithubIcon from "../../../icons/github-dark.png";
+import LinkedinIcon from "../../../icons/linkedin-dark.png";
+import MapPinIcon from "../../../icons/map-pin-dark.png";
+import PhoneIcon from "../../../icons/phone-dark.png";
+import InstagramIcon from "../../../icons/instagram-dark.png";
 
 /* Fonts */
 Font.register({
@@ -70,7 +84,7 @@ const styles = StyleSheet.create({
   sidebar: {
     width: "38%",
     backgroundColor: theme.sidebarBg,
-    padding: 30,
+    padding: 25,
     color: theme.textLight,
   },
 
@@ -181,19 +195,37 @@ const styles = StyleSheet.create({
     color: "#4B5563",
   },
 
-  /* FOOTER */
   footer: {
     backgroundColor: theme.headerBg,
-    padding: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
     flexDirection: "row",
     justifyContent: "space-evenly",
-    flexWrap: "wrap",
+    alignItems: "center",
+    flexWrap: "nowrap", // ✅ no wrap
+    width: "100%",
   },
 
   footerItem: {
-    fontSize: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    maxWidth: "25%", // ✅ prevents one item eating whole row
+  },
+  footerIcon: {
+    width: 12,
+    height: 12,
+  },
+  footerText: {
+    fontSize: 7,
+    color: "#555",
     fontWeight: 500,
-    marginBottom: 4,
+  },
+  footerLink: {
+    fontSize: 9,
+    color: "#555",
+    fontWeight: 500,
+    textDecoration: "none",
   },
 });
 
@@ -202,9 +234,24 @@ const formatDateRange = (dates) => {
   if (!dates) return "";
   const s = dates.startDate ? new Date(dates.startDate) : null;
   const e = dates.endDate ? new Date(dates.endDate) : null;
-  if (s && e) return `${s.getFullYear()} - ${e.getFullYear()}`;
-  if (s) return `${s.getFullYear()} - Present`;
-  if (e) return `Ended ${e.getFullYear()}`;
+  if (s && e)
+    return `${s.toLocaleString(undefined, {
+      month: "short",
+      year: "numeric",
+    })} - ${e.toLocaleString(undefined, {
+      month: "short",
+      year: "numeric",
+    })}`;
+  if (s)
+    return `${s.toLocaleString(undefined, {
+      month: "short",
+      year: "numeric",
+    })} - Present`;
+  if (e)
+    return `Ended ${e.toLocaleString(undefined, {
+      month: "short",
+      year: "numeric",
+    })}`;
   return "";
 };
 
@@ -256,8 +303,23 @@ const ResumePDFCharm = ({ data, color }) => {
                       <Text style={{ fontSize: 10, opacity: 0.8 }}>
                         {c.issuingAuthority}
                         {c.issueDate &&
-                          `, ${new Date(c.issueDate).getFullYear()}`}
+                          `, ${new Date(c.issueDate).toLocaleString(undefined, {
+                            month: "short",
+                            year: "numeric",
+                          })}`}
                       </Text>
+                      {c.link && (
+                        <Link
+                          src={c.link}
+                          style={{
+                            fontSize: 10,
+                            color: "#F3F4F6",
+                            textDecoration: "underline",
+                          }}
+                        >
+                          Link
+                        </Link>
+                      )}
                     </View>
                   ))}
                 </View>
@@ -320,6 +382,56 @@ const ResumePDFCharm = ({ data, color }) => {
                         {p.extraDetails && (
                           <Text style={styles.entryDesc}>{p.extraDetails}</Text>
                         )}
+                        {(p.links || []).length > 0 && (
+                          <View style={{ marginTop: 4 }}>
+                            {p.links.map((l, idx) => (
+                              <Link
+                                key={idx}
+                                src={l.link}
+                                style={{
+                                  color: "#8F9B8F",
+                                  textDecoration: "underline",
+                                  fontSize: 9,
+                                }}
+                              >
+                                Link
+                              </Link>
+                            ))}
+                          </View>
+                        )}
+                      </View>
+                    ))}
+                  </View>
+                )}
+
+                {otherExp.length > 0 && (
+                  <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Other Experience</Text>
+
+                    {otherExp.map((exp, i) => (
+                      <View key={i} style={styles.entry}>
+                        {/* Row 1: Position + Date */}
+                        <View style={styles.entryRow}>
+                          <Text style={styles.entryTitle}>
+                            {exp.position || "Position"}
+                          </Text>
+                          <Text style={styles.entryDate}>
+                            {formatDateRange(exp.dates)}
+                          </Text>
+                        </View>
+
+                        {/* Row 2: Company + Address */}
+                        <Text style={styles.entrySub}>
+                          {exp.companyName || "Company Name"}
+                          {exp.companyAddress ? ` | ${exp.companyAddress}` : ""}
+                        </Text>
+
+                        {/* Row 3: Description */}
+                        {exp.workDescription && (
+                          <Text style={styles.entryDesc}>
+                            {exp.workDescription}
+                          </Text>
+                        )}
                       </View>
                     ))}
                   </View>
@@ -355,9 +467,52 @@ const ResumePDFCharm = ({ data, color }) => {
 
           {/* FOOTER */}
           <View style={styles.footer}>
-            {p.phone && <Text style={styles.footerItem}>{p.phone}</Text>}
-            {p.email && <Text style={styles.footerItem}>{p.email}</Text>}
-            {p.address && <Text style={styles.footerItem}>{p.address}</Text>}
+            {p.phone && (
+              <View style={styles.footerItem}>
+                <Image src={PhoneIcon} style={styles.footerIcon} />
+                <Text style={styles.footerText}>{p.phone}</Text>
+              </View>
+            )}
+
+            {p.email && (
+              <View style={styles.footerItem}>
+                <Image src={MailIcon} style={styles.footerIcon} />
+                <Text style={styles.footerText}>{p.email}</Text>
+              </View>
+            )}
+
+            {p.address && (
+              <View style={styles.footerItem}>
+                <Image src={MapPinIcon} style={styles.footerIcon} />
+                <Text style={styles.footerText}>{p.address}</Text>
+              </View>
+            )}
+
+            {(p.socials || []).map((s, i) => {
+              const name = s.name?.toLowerCase();
+              const icon =
+                name === "github"
+                  ? GithubIcon
+                  : name === "linkedin"
+                    ? LinkedinIcon
+                    : name === "instagram"
+                      ? InstagramIcon
+                      : null;
+
+              return (
+                <View key={i} style={styles.footerItem}>
+                  {icon && <Image src={icon} style={styles.footerIcon} />}
+
+                  {s.link ? (
+                    <Link src={s.link} style={styles.footerLink}>
+                      {s.name}
+                    </Link>
+                  ) : (
+                    <Text style={styles.footerText}>{s.name}</Text>
+                  )}
+                </View>
+              );
+            })}
           </View>
         </View>
       </Page>

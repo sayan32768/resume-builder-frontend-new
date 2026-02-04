@@ -1,6 +1,6 @@
 import React from "react";
 import { useFormContext, useWatch } from "react-hook-form";
-import { Mail, Phone, MapPin, Linkedin, Github, Twitter } from "lucide-react";
+import { Mail, Phone, MapPin, Linkedin, Github, Instagram } from "lucide-react";
 
 const ResumePreviewBold = ({ color = "#f14d34" }) => {
   // Default to the orange-red from image
@@ -21,9 +21,23 @@ const ResumePreviewBold = ({ color = "#f14d34" }) => {
     const start = startDate ? new Date(startDate) : null;
     const end = endDate ? new Date(endDate) : null;
     if (start && end && !isNaN(start) && !isNaN(end))
-      return `${start.getFullYear()} - ${end.getFullYear()}`;
-    if (start && !isNaN(start)) return `${start.getFullYear()} - Present`;
-    if (end && !isNaN(end)) return `Ended ${end.getFullYear()}`;
+      return `${start.toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })} - ${end.toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })}`;
+    if (start && !isNaN(start))
+      return `${start.toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })} - Present`;
+    if (end && !isNaN(end))
+      return `Ended ${end.toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })}`;
     return "";
   };
 
@@ -303,7 +317,10 @@ const ResumePreviewBold = ({ color = "#f14d34" }) => {
               >
                 <div className="entry-date">
                   {cert.issueDate
-                    ? new Date(cert.issueDate).getFullYear()
+                    ? new Date(cert.issueDate).toLocaleString(undefined, {
+                        month: "short",
+                        year: "numeric",
+                      })
                     : "Year"}
                 </div>
                 <div className="entry-header">

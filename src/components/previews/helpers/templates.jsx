@@ -30,16 +30,16 @@ export const RESUME_TEMPLATES = [
     Preview: CharmTemplatePreview,
     description: "Soft editorial layout with elegant styling",
   },
-  {
-    id: "boxed",
-    name: "Boxed",
-    Preview: BoxedTemplatePreview,
-    description: "Structured layout with boxed sections",
-  },
-  {
-    id: "bold",
-    name: "Bold",
-    Preview: BoldTemplatePreview,
-    description: "Bold layout with strong visual emphasis",
-  },
+  // {
+  //   id: "boxed",
+  //   name: "Boxed",
+  //   Preview: BoxedTemplatePreview,
+  //   description: "Structured layout with boxed sections",
+  // },
+  // {
+  //   id: "bold",
+  //   name: "Bold",
+  //   Preview: BoldTemplatePreview,
+  //   description: "Bold layout with strong visual emphasis",
+  // },
 ];

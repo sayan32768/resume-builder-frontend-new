@@ -43,7 +43,7 @@ const ResumePreviewMinimal = ({ color }) => {
 
 .min-header .subtitle {
   margin-top: 10px;
-  font-size: 13px;
+  font-size: 15px;
   color: #4b5563;
   max-width: 520px;
   margin-left: auto;
@@ -58,7 +58,7 @@ const ResumePreviewMinimal = ({ color }) => {
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px 22px;
-  font-size: 11px;
+  font-size: 15px;
   color: #374151;
 }
 
@@ -76,7 +76,7 @@ const ResumePreviewMinimal = ({ color }) => {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: ${color};
@@ -91,7 +91,7 @@ const ResumePreviewMinimal = ({ color }) => {
 
 /* ================= BLOCK TEXT ================= */
 .min-block {
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.65;
   color: #374151;
   margin-bottom: 14px;
@@ -104,26 +104,26 @@ const ResumePreviewMinimal = ({ color }) => {
 
 .min-exp .role {
   font-weight: 600;
-  font-size: 13px;
+  font-size: 14px;
   color: #111827;
 }
 
 .min-exp .meta {
-  font-size: 11px;
+  font-size: 13px;
   color: #6b7280;
   margin-top: 2px;
 }
 
 .min-exp .desc {
   margin-top: 6px;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.6;
   color: #374151;
 }
 
 /* ================= SKILLS ================= */
 .min-skills {
-  font-size: 12px;
+  font-size: 14px;
   color: #374151;
   line-height: 1.7;
 }
@@ -139,7 +139,7 @@ const ResumePreviewMinimal = ({ color }) => {
   margin-top: 4px;
   color: ${color};
   text-decoration: underline;
-  font-size: 11px;
+  font-size: 14px;
 }
       `}</style>
 
@@ -154,9 +154,24 @@ const ResumePreviewMinimal = ({ color }) => {
           {personal.phone && <span>{personal.phone}</span>}
           {personal.address && <span>{personal.address}</span>}
           {personal.socials?.map((s, i) => (
-            <span key={i}>
-              {s.name}: {s.link || "-"}
-            </span>
+            <div key={i}>
+              <span>
+                {s.link ? (
+                  <>
+                    <a
+                      href={s.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ textDecoration: "underline" }}
+                    >
+                      {s.name}
+                    </a>
+                  </>
+                ) : (
+                  `${s.name}: -`
+                )}
+              </span>
+            </div>
           ))}
         </div>
       </div>
@@ -174,9 +189,19 @@ const ResumePreviewMinimal = ({ color }) => {
                 {exp.companyName || "-"}
                 {exp.companyAddress && ` · ${exp.companyAddress}`}
                 {exp.dates?.startDate &&
-                  ` · ${new Date(exp.dates.startDate).getFullYear()}${
+                  ` · ${new Date(exp.dates.startDate).toLocaleString(
+                    undefined,
+                    {
+                      month: "short",
+                      year: "numeric",
+                    },
+                  )}${
                     exp.dates?.endDate
-                      ? "–" + new Date(exp.dates.endDate).getFullYear()
+                      ? "–" +
+                        new Date(exp.dates.endDate).toLocaleString(undefined, {
+                          month: "short",
+                          year: "numeric",
+                        })
                       : "–Present"
                   }`}
               </div>
@@ -205,7 +230,7 @@ const ResumePreviewMinimal = ({ color }) => {
                   rel="noopener noreferrer"
                   className="min-link"
                 >
-                  {l.link}
+                  Link
                 </a>
               ))}
             </div>
@@ -227,9 +252,19 @@ const ResumePreviewMinimal = ({ color }) => {
               <div className="meta">
                 {edu.location}
                 {edu.dates?.startDate &&
-                  ` · ${new Date(edu.dates.startDate).getFullYear()}${
+                  ` · ${new Date(edu.dates.startDate).toLocaleString(
+                    undefined,
+                    {
+                      month: "short",
+                      year: "numeric",
+                    },
+                  )}${
                     edu.dates?.endDate
-                      ? "–" + new Date(edu.dates.endDate).getFullYear()
+                      ? "–" +
+                        new Date(edu.dates.endDate).toLocaleString(undefined, {
+                          month: "short",
+                          year: "numeric",
+                        })
                       : "–Present"
                   }`}
               </div>
@@ -266,7 +301,11 @@ const ResumePreviewMinimal = ({ color }) => {
               <div className="role">{c.title}</div>
               <div className="meta">
                 {c.issuingAuthority}
-                {c.issueDate && ` · ${new Date(c.issueDate).getFullYear()}`}
+                {c.issueDate &&
+                  ` · ${new Date(c.issueDate).toLocaleString(undefined, {
+                    month: "short",
+                    year: "numeric",
+                  })}`}
               </div>
               {c.link && (
                 <a
@@ -275,7 +314,7 @@ const ResumePreviewMinimal = ({ color }) => {
                   rel="noopener noreferrer"
                   className="min-link"
                 >
-                  {c.link}
+                  Link
                 </a>
               )}
             </div>
@@ -290,10 +329,28 @@ const ResumePreviewMinimal = ({ color }) => {
           {otherExp.map((exp, i) => (
             <div key={i} className="min-exp">
               <div className="role">{exp.position || "-"}</div>
+
               <div className="meta">
                 {exp.companyName || "-"}
                 {exp.companyAddress && ` · ${exp.companyAddress}`}
+                {exp.dates?.startDate &&
+                  ` · ${new Date(exp.dates.startDate).toLocaleString(
+                    undefined,
+                    {
+                      month: "short",
+                      year: "numeric",
+                    },
+                  )}${
+                    exp.dates?.endDate
+                      ? "–" +
+                        new Date(exp.dates.endDate).toLocaleString(undefined, {
+                          month: "short",
+                          year: "numeric",
+                        })
+                      : "–Present"
+                  }`}
               </div>
+
               {exp.workDescription && (
                 <div className="desc">{exp.workDescription}</div>
               )}

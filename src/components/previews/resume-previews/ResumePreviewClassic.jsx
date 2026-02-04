@@ -1,6 +1,6 @@
 import React from "react";
 import { useFormContext, useWatch } from "react-hook-form";
-import { Mail, Phone, MapPin, Linkedin, Github, Twitter } from "lucide-react";
+import { Mail, Phone, MapPin, Linkedin, Github, Instagram } from "lucide-react";
 
 const ResumePreviewClassic = ({ color }) => {
   const { control } = useFormContext();
@@ -20,9 +20,23 @@ const ResumePreviewClassic = ({ color }) => {
     const start = startDate ? new Date(startDate) : null;
     const end = endDate ? new Date(endDate) : null;
     if (start && end && !isNaN(start) && !isNaN(end))
-      return `${start.getFullYear()} - ${end.getFullYear()}`;
-    if (start && !isNaN(start)) return `${start.getFullYear()} - Present`;
-    if (end && !isNaN(end)) return `Ended ${end.getFullYear()}`;
+      return `${start.toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })} - ${end.toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })}`;
+    if (start && !isNaN(start))
+      return `${start.toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })} - Present`;
+    if (end && !isNaN(end))
+      return `Ended ${end.toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })}`;
     return "";
   };
 
@@ -137,7 +151,7 @@ const ResumePreviewClassic = ({ color }) => {
           font-size: 14px;
         }
         .proj-links {
-          padding-left: 16px;
+          padding-left: 0px;
         }
         .proj-links a {
           color: #2563eb;
@@ -163,20 +177,27 @@ const ResumePreviewClassic = ({ color }) => {
               <div key={i} className="contact-item">
                 {s.name?.toLowerCase() === "linkedin" && <Linkedin size={14} />}
                 {s.name?.toLowerCase() === "github" && <Github size={14} />}
-                {s.name?.toLowerCase() === "twitter" && <Twitter size={14} />}
+                {s.name?.toLowerCase() === "instagram" && (
+                  <Instagram size={14} />
+                )}
+
                 <span>
-                  {s.name}:{" "}
                   {s.link ? (
-                    <a
-                      href={s.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: "#93c5fd" }}
-                    >
-                      {s.link}
-                    </a>
+                    <>
+                      <a
+                        href={s.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          color: "#93c5fd",
+                          textDecoration: "underline",
+                        }}
+                      >
+                        {s.name}
+                      </a>
+                    </>
                   ) : (
-                    "-"
+                    `${s.name}: -`
                   )}
                 </span>
               </div>
@@ -241,7 +262,12 @@ const ResumePreviewClassic = ({ color }) => {
                 >
                   {cert.issueDate && (
                     <p style={{ fontStyle: "italic", color: "#9ca3af" }}>
-                      ({new Date(cert.issueDate).getFullYear()})
+                      (
+                      {new Date(cert.issueDate).toLocaleString(undefined, {
+                        month: "short",
+                        year: "numeric",
+                      })}
+                      )
                     </p>
                   )}
                   <p style={{ fontWeight: 600 }}>
@@ -255,9 +281,13 @@ const ResumePreviewClassic = ({ color }) => {
                       href={cert.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ color: "#93c5fd", fontSize: "12px" }}
+                      style={{
+                        color: "#93c5fd",
+                        fontSize: "12px",
+                        textDecoration: "underline",
+                      }}
                     >
-                      {cert.link}
+                      Link
                     </a>
                   )}
                 </div>
@@ -334,7 +364,7 @@ const ResumePreviewClassic = ({ color }) => {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          {l.link}
+                          Link
                         </a>
                       </li>
                     ))}

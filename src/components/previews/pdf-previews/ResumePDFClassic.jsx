@@ -6,6 +6,7 @@ import {
   View,
   StyleSheet,
   Image,
+  Link,
 } from "@react-pdf/renderer";
 import { Font } from "@react-pdf/renderer";
 import MailIcon from "../../../icons/mail.png";
@@ -13,7 +14,7 @@ import GithubIcon from "../../../icons/github.png";
 import LinkedinIcon from "../../../icons/linkedin.png";
 import MapPinIcon from "../../../icons/map-pin.png";
 import PhoneIcon from "../../../icons/phone.png";
-import TwitterIcon from "../../../icons/twitter.png";
+import InstagramIcon from "../../../icons/instagram.png";
 
 Font.register({
   family: "Nunito Sans",
@@ -97,7 +98,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
 
-  muted: { color: "#d1d5db" },
+  muted: { color: "#d1d5db", fontSize: 9 },
   faint: { color: "#9ca3af", fontSize: 9 },
   bold: { fontWeight: 700 },
   italic: { fontStyle: "italic" },
@@ -181,9 +182,24 @@ const formatDateRange = (dates) => {
   if (!dates) return "";
   const s = dates.startDate ? new Date(dates.startDate) : null;
   const e = dates.endDate ? new Date(dates.endDate) : null;
-  if (s && e) return `${s.getFullYear()} - ${e.getFullYear()}`;
-  if (s) return `${s.getFullYear()} - Present`;
-  if (e) return `Ended ${e.getFullYear()}`;
+  if (s && e)
+    return `${s.toLocaleString(undefined, {
+      month: "short",
+      year: "numeric",
+    })} - ${e.toLocaleString(undefined, {
+      month: "short",
+      year: "numeric",
+    })}`;
+  if (s)
+    return `${s.toLocaleString(undefined, {
+      month: "short",
+      year: "numeric",
+    })} - Present`;
+  if (e)
+    return `Ended ${e.toLocaleString(undefined, {
+      month: "short",
+      year: "numeric",
+    })}`;
   return "";
 };
 
@@ -233,16 +249,31 @@ const ResumePDFClassic = ({ data, color }) => {
                     ? GithubIcon
                     : name === "linkedin"
                       ? LinkedinIcon
-                      : name === "twitter"
-                        ? TwitterIcon
+                      : name === "instagram"
+                        ? InstagramIcon
                         : null;
 
                 return (
                   <View key={i} style={styles.iconRow}>
                     {icon && <Image src={icon} style={styles.icon} />}
-                    <Text style={styles.leftText}>
-                      {s.name}: {s.link || "-"}
-                    </Text>
+
+                    {s.link ? (
+                      <Link
+                        src={s.link}
+                        style={[
+                          styles.leftText,
+                          {
+                            color: "#93c5fd",
+                            textDecoration: "underline",
+                            fontSize: 9,
+                          },
+                        ]}
+                      >
+                        {s.name}
+                      </Link>
+                    ) : (
+                      <Text style={styles.leftText}>{s.name}: -</Text>
+                    )}
                   </View>
                 );
               })}
@@ -295,14 +326,34 @@ const ResumePDFClassic = ({ data, color }) => {
                   <View key={i} style={{ marginBottom: 10 }}>
                     {c.issueDate && (
                       <Text style={[styles.faint, styles.italic]}>
-                        ({new Date(c.issueDate).getFullYear()})
+                        (
+                        {new Date(c.issueDate).toLocaleString(undefined, {
+                          month: "short",
+                          year: "numeric",
+                        })}
+                        )
                       </Text>
                     )}
                     <Text style={[styles.leftText, styles.bold]}>
                       {c.title}
                     </Text>
+
                     <Text style={styles.muted}>{c.issuingAuthority}</Text>
-                    {c.link && <Text style={styles.link}>{c.link}</Text>}
+                    {c.link && (
+                      <Link
+                        src={c.link}
+                        style={[
+                          styles.leftText,
+                          {
+                            color: "#93c5fd",
+                            textDecoration: "underline",
+                            fontSize: 9,
+                          },
+                        ]}
+                      >
+                        Link
+                      </Link>
+                    )}
                   </View>
                 ))}
               </View>
@@ -361,9 +412,21 @@ const ResumePDFClassic = ({ data, color }) => {
                     <Text style={styles.bodyText}>{p.extraDetails}</Text>
                   )}
                   {(p.links || []).map((l, idx) => (
-                    <Text key={idx} style={styles.listItem}>
-                      • {l.link}
-                    </Text>
+                    <Link
+                      key={idx}
+                      src={l.link}
+                      style={[
+                        styles.listItem,
+                        {
+                          color: "#1d4ed8",
+                          marginLeft: 0,
+                          textDecoration: "underline",
+                          fontSize: 9,
+                        },
+                      ]}
+                    >
+                      Link
+                    </Link>
                   ))}
                 </View>
               ))}

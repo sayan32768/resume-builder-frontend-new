@@ -175,9 +175,24 @@ const formatDateRange = (dates) => {
   if (!dates) return "";
   const s = dates.startDate ? new Date(dates.startDate) : null;
   const e = dates.endDate ? new Date(dates.endDate) : null;
-  if (s && e) return `${s.getFullYear()} - ${e.getFullYear()}`;
-  if (s) return `${s.getFullYear()} - Present`;
-  if (e) return `Ended ${e.getFullYear()}`;
+  if (s && e)
+    return `${s.toLocaleString(undefined, {
+      month: "short",
+      year: "numeric",
+    })} - ${e.toLocaleString(undefined, {
+      month: "short",
+      year: "numeric",
+    })}`;
+  if (s)
+    return `${s.toLocaleString(undefined, {
+      month: "short",
+      year: "numeric",
+    })} - Present`;
+  if (e)
+    return `Ended ${e.toLocaleString(undefined, {
+      month: "short",
+      year: "numeric",
+    })}`;
   return "";
 };
 
@@ -239,7 +254,10 @@ const ResumePDFBoxed = ({ data, color = "#111827" }) => {
                   </Text>
                   {c.issueDate && (
                     <Text style={{ fontSize: 9, fontStyle: "italic" }}>
-                      {new Date(c.issueDate).getFullYear()}
+                      {new Date(c.issueDate).toLocaleString(undefined, {
+                        month: "short",
+                        year: "numeric",
+                      })}
                     </Text>
                   )}
                 </View>

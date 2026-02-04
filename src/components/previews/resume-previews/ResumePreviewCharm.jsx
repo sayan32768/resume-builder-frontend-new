@@ -6,8 +6,8 @@ import {
   MapPin,
   Linkedin,
   Github,
-  Twitter,
   Globe,
+  Instagram,
 } from "lucide-react";
 
 const ResumePreviewCharm = ({ color }) => {
@@ -28,9 +28,23 @@ const ResumePreviewCharm = ({ color }) => {
     const start = startDate ? new Date(startDate) : null;
     const end = endDate ? new Date(endDate) : null;
     if (start && end && !isNaN(start) && !isNaN(end))
-      return `${start.getFullYear()} - ${end.getFullYear()}`;
-    if (start && !isNaN(start)) return `${start.getFullYear()} - Present`;
-    if (end && !isNaN(end)) return `Ended ${end.getFullYear()}`;
+      return `${start.toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })} - ${end.toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })}`;
+    if (start && !isNaN(start))
+      return `${start.toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })} - Present`;
+    if (end && !isNaN(end))
+      return `Ended ${end.toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
+      })}`;
     return "";
   };
 
@@ -257,9 +271,26 @@ const ResumePreviewCharm = ({ color }) => {
                   <p style={{ fontSize: "12px", opacity: 0.8, margin: 0 }}>
                     {cert.issuingAuthority},{" "}
                     {cert.issueDate
-                      ? new Date(cert.issueDate).getFullYear()
+                      ? new Date(cert.issueDate).toLocaleString(undefined, {
+                          month: "short",
+                          year: "numeric",
+                        })
                       : ""}
                   </p>
+                  {cert.link && (
+                    <a
+                      href={cert.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        fontSize: "14px",
+                        color: "#F3F4F6",
+                        textDecoration: "underline",
+                      }}
+                    >
+                      Link
+                    </a>
+                  )}
                 </div>
               ))}
             </div>
@@ -361,12 +392,14 @@ const ResumePreviewCharm = ({ color }) => {
                       <span className="entry-title">
                         {exp.position || "Position"}
                       </span>
+
                       <span className="entry-date">
                         {formatDateRange(exp.dates)}
                       </span>
                     </div>
                     <p className="entry-subtitle">
                       {exp.companyName || "Company Name"}
+                      {exp.companyAddress && ` | ${exp.companyAddress}`}
                     </p>
                     {exp.workDescription && (
                       <p className="entry-desc">{exp.workDescription}</p>
@@ -431,7 +464,7 @@ const ResumePreviewCharm = ({ color }) => {
           <div key={i} className="contact-pill">
             {s.name?.toLowerCase() === "linkedin" && <Linkedin size={14} />}
             {s.name?.toLowerCase() === "github" && <Github size={14} />}
-            {s.name?.toLowerCase() === "twitter" && <Twitter size={14} />}
+            {s.name?.toLowerCase() === "instagram" && <Instagram size={14} />}
             <a href={s.link} target="_blank" rel="noopener noreferrer">
               {s.name}
             </a>

@@ -1,5 +1,12 @@
 import React from "react";
-import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Link,
+} from "@react-pdf/renderer";
 import { Font } from "@react-pdf/renderer";
 
 /* ---------------- FONT ---------------- */
@@ -27,7 +34,7 @@ const styles = StyleSheet.create({
     minHeight: "297mm", // ✅ add this
     paddingTop: 38,
     paddingBottom: 38,
-    paddingHorizontal: 44,
+    paddingHorizontal: 40,
     fontFamily: "Noto Sans",
     color: "#111827",
     backgroundColor: "#ffffff",
@@ -40,11 +47,11 @@ const styles = StyleSheet.create({
   /* HEADER */
   header: {
     alignItems: "center",
-    marginBottom: 28,
+    marginBottom: 20,
   },
 
   name: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: 700,
     letterSpacing: 2,
     textTransform: "uppercase",
@@ -56,7 +63,7 @@ const styles = StyleSheet.create({
     color: "#4b5563",
     maxWidth: 520,
     textAlign: "center",
-    lineHeight: 1.45,
+    lineHeight: 1.3,
   },
 
   contactRow: {
@@ -72,12 +79,12 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
     backgroundColor: "#e5e7eb",
-    marginVertical: 18,
+    marginVertical: 14,
   },
 
   /* SECTION TITLE */
   sectionTitle: {
-    marginTop: 26,
+    marginTop: 20,
     marginBottom: 10,
     flexDirection: "row",
     alignItems: "center",
@@ -112,7 +119,7 @@ const styles = StyleSheet.create({
   desc: {
     marginTop: 6,
     fontSize: 12,
-    lineHeight: 1.45,
+    lineHeight: 1.3,
     color: "#374151",
   },
 
@@ -142,8 +149,19 @@ const formatYearRange = (dates) => {
   if (!dates) return "";
   const s = dates.startDate ? new Date(dates.startDate) : null;
   const e = dates.endDate ? new Date(dates.endDate) : null;
-  if (s && e) return `${s.getFullYear()}–${e.getFullYear()}`;
-  if (s) return `${s.getFullYear()}–Present`;
+  if (s && e)
+    return `${s.toLocaleString(undefined, {
+      month: "short",
+      year: "numeric",
+    })}–${e.toLocaleString(undefined, {
+      month: "short",
+      year: "numeric",
+    })}`;
+  if (s)
+    return `${s.toLocaleString(undefined, {
+      month: "short",
+      year: "numeric",
+    })}–Present`;
   return "";
 };
 
@@ -173,6 +191,20 @@ const ResumePDFMinimal = ({ data, color = "#111827" }) => {
               {personal.email && <Text>{personal.email}</Text>}
               {personal.phone && <Text>{personal.phone}</Text>}
               {personal.address && <Text>{personal.address}</Text>}
+
+              {(personal.socials || []).map((s, i) =>
+                s.link ? (
+                  <Link
+                    key={i}
+                    src={s.link}
+                    style={{ textDecoration: "underline", color: "#000000" }}
+                  >
+                    {s.name}
+                  </Link>
+                ) : (
+                  <Text key={i}>{s.name}: -</Text>
+                ),
+              )}
             </View>
           </View>
 
@@ -214,11 +246,32 @@ const ResumePDFMinimal = ({ data, color = "#111827" }) => {
               {projects.map((p, i) => (
                 <View key={i} style={styles.block}>
                   <Text style={styles.role}>{p.title || p.name}</Text>
+
                   {p.description && (
                     <Text style={styles.desc}>{p.description}</Text>
                   )}
                   {p.extraDetails && (
                     <Text style={styles.desc}>{p.extraDetails}</Text>
+                  )}
+
+                  {(p.links || []).length > 0 && (
+                    <View style={{ marginTop: 4 }}>
+                      {p.links.map((l, idx) => (
+                        <Link
+                          key={idx}
+                          src={l.link}
+                          style={[
+                            styles.desc,
+                            {
+                              color,
+                              textDecoration: "underline",
+                            },
+                          ]}
+                        >
+                          Link
+                        </Link>
+                      ))}
+                    </View>
                   )}
                 </View>
               ))}
@@ -284,10 +337,27 @@ const ResumePDFMinimal = ({ data, color = "#111827" }) => {
               {certifications.map((c, i) => (
                 <View key={i} style={styles.block}>
                   <Text style={styles.role}>{c.title}</Text>
+
                   <Text style={styles.meta}>
                     {c.issuingAuthority}
-                    {c.issueDate && ` · ${new Date(c.issueDate).getFullYear()}`}
+                    {c.issueDate &&
+                      ` · ${new Date(c.issueDate).toLocaleString(undefined, {
+                        month: "short",
+                        year: "numeric",
+                      })}`}
                   </Text>
+
+                  {c.link && (
+                    <Link
+                      src={c.link}
+                      style={[
+                        styles.meta,
+                        { color, textDecoration: "underline" },
+                      ]}
+                    >
+                      Link
+                    </Link>
+                  )}
                 </View>
               ))}
             </>
@@ -304,7 +374,13 @@ const ResumePDFMinimal = ({ data, color = "#111827" }) => {
               {otherExp.map((exp, i) => (
                 <View key={i} style={styles.block}>
                   <Text style={styles.role}>{exp.position}</Text>
-                  <Text style={styles.meta}>{exp.companyName}</Text>
+                  <Text style={styles.meta}>
+                    {exp.companyName}
+                    {exp.companyAddress && ` · ${exp.companyAddress}`}
+                    {formatYearRange(exp.dates) &&
+                      ` · ${formatYearRange(exp.dates)}`}
+                  </Text>
+
                   {exp.workDescription && (
                     <Text style={styles.desc} wrap={false}>
                       {exp.workDescription}
