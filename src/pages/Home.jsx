@@ -10,16 +10,27 @@ import api from "@/api/axios";
 import { AnimatePresence, motion } from "framer-motion";
 import { renderTemplatePreviewCard } from "@/components/previews/helpers/RenderTemplatePreviewCard";
 import { RESUME_TEMPLATES } from "@/components/previews/helpers/templates";
+import { Button } from "@/components/ui/button";
 
 const Home = () => {
   const { user, setUser } = getData();
   const navigate = useNavigate();
 
-  const [pastResumes, setPastResumes] = useState([]);
-  const [drafts, setDrafts] = useState([]);
-  const [dataLoading, setDataLoading] = useState(true);
   const [open, setOpen] = useState(0);
   const [activeTab, setActiveTab] = useState("resumes");
+  const [draftsFetched, setDraftsFetched] = useState(false);
+
+  const [pastResumes, setPastResumes] = useState([]);
+  const [dataLoading, setDataLoading] = useState(false);
+  const [loadMoreLoading, setLoadMoreLoading] = useState(false); // load more only
+  const [resumeMeta, setResumeMeta] = useState(null);
+  const [resumePage, setResumePage] = useState(1);
+
+  const [drafts, setDrafts] = useState([]);
+  const [draftMeta, setDraftMeta] = useState(null);
+  const [draftPage, setDraftPage] = useState(1);
+  const [draftLoading, setDraftLoading] = useState(false);
+  const [draftLoadMoreLoading, setDraftLoadMoreLoading] = useState(false); // load more only
 
   const tabRefs = {
     resumes: useRef(null),
@@ -27,23 +38,64 @@ const Home = () => {
     templates: useRef(null),
   };
 
-  useEffect(() => {
-    const getResumeData = async () => {
-      setDataLoading(true);
-      try {
-        // await new Promise((res) => setTimeout(res, 5000));
-        const res = await api.get(`/api/resume/all`);
-        if (res.data.success) {
-          console.log(res.data.data);
-          setPastResumes(res.data.data.filter((doc) => doc.isDraft === false));
-          setDrafts(res.data.data.filter((doc) => doc.isDraft === true));
-        }
-      } finally {
-        setDataLoading(false);
+  const fetchResumes = async (page = 1, append = false) => {
+    if (append) setLoadMoreLoading(true);
+    else setDataLoading(true);
+
+    try {
+      const res = await api.get(`/api/resume/all?type=published&page=${page}`);
+
+      if (res.data.success) {
+        const paginator = res.data.data;
+
+        setPastResumes((prev) =>
+          append ? [...prev, ...paginator.data] : paginator.data,
+        );
+
+        setResumeMeta(paginator);
+        setResumePage(paginator.current_page);
       }
-    };
-    getResumeData();
+    } finally {
+      if (append) setLoadMoreLoading(false);
+      else setDataLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchResumes(1);
   }, []);
+
+  const fetchDrafts = async (page = 1, append = false) => {
+    if (append) setDraftLoadMoreLoading(true);
+    else setDraftLoading(true);
+
+    try {
+      const res = await api.get(`/api/resume/all?type=drafts&page=${page}`);
+
+      if (res.data.success) {
+        const paginator = res.data.data;
+
+        setDrafts((prev) =>
+          append ? [...prev, ...paginator.data] : paginator.data,
+        );
+
+        setDraftMeta(paginator);
+        setDraftPage(paginator.current_page);
+
+        setDraftsFetched(true);
+      }
+    } finally {
+      if (append) setDraftLoadMoreLoading(false);
+      else setDraftLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab !== "drafts") return;
+    if (draftsFetched) return;
+
+    fetchDrafts(1);
+  }, [activeTab, draftsFetched]);
 
   useEffect(() => {
     const close = () => setOpen(null);
@@ -151,24 +203,14 @@ const Home = () => {
           </div> */}
 
           <div className="mx-auto mt-9 max-w-7xl px-12">
-            {dataLoading ? (
-              <div className="animate-pulse space-y-3">
-                {/* Title skeleton */}
-                <div className="h-6 w-64 rounded-md bg-[#183D3D]/20" />
-
-                {/* Subtitle skeleton */}
-                <div className="h-4 w-96 rounded-md bg-[#183D3D]/15" />
-              </div>
-            ) : (
-              <>
-                <h2 className="text-xl font-bold text-[#183D3D]">
-                  Welcome back, {user.fullName}
-                </h2>
-                <p className="mb-8 text-[#183D3D]/70">
-                  You have {pastResumes.length} resumes active in your account.
-                </p>
-              </>
-            )}
+            <>
+              <h2 className="text-xl font-bold text-[#183D3D]">
+                Welcome back, {user.fullName}
+              </h2>
+              <p className="mb-8 text-[#183D3D]/70">
+                Create a new resume or continue editing your existing ones.
+              </p>
+            </>
           </div>
 
           {/* Tabs */}
@@ -203,11 +245,11 @@ const Home = () => {
                       </span>
 
                       {/* Badge — hidden for templates & zero counts */}
-                      {tab !== "templates" && count > 0 && (
+                      {/* {tab !== "templates" && count > 0 && (
                         <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#183D3D]/20 px-1.5 text-xs font-semibold text-[#183D3D]">
                           {count}
                         </span>
-                      )}
+                      )} */}
                     </div>
                   </button>
                 );
@@ -263,13 +305,13 @@ const Home = () => {
                             </p>
                           </div>
 
-                          {dataLoading ? (
+                          {dataLoading && pastResumes.length === 0 ? (
                             [1, 2, 3].map((_, idx) => (
                               <div
                                 key={idx}
-                                className="overflow-hidden rounded-2xl bg-[#E6F0EC]"
+                                className="flex h-[380px] flex-col overflow-hidden rounded-2xl bg-[#E6F0EC]"
                               >
-                                <Skeleton className="h-56 w-full bg-[#CFE5DC]" />
+                                <Skeleton className="w-full flex-1 bg-[#CFE5DC]" />
                                 <div className="space-y-2 p-4">
                                   <Skeleton className="h-4 w-3/4 bg-[#CFE5DC]" />
                                   <Skeleton className="h-3 w-1/2 bg-[#c9e1d8]" />
@@ -277,10 +319,15 @@ const Home = () => {
                               </div>
                             ))
                           ) : pastResumes.length === 0 ? (
-                            // <div className="col-span-full py-12 text-center text-slate-500">
-                            //   No past resumes found
-                            // </div>
-                            <></>
+                            <div className="group rounded-2xlborder-[#CFE5DC] col-span-full flex h-[380px] flex-col items-center justify-center">
+                              <p className="mt-4 text-base font-semibold text-slate-800">
+                                Resumes Empty
+                              </p>
+
+                              <p className="mt-1 text-sm text-slate-500">
+                                No Resumes Found.
+                              </p>
+                            </div>
                           ) : (
                             pastResumes.map((doc) => (
                               <div
@@ -393,6 +440,19 @@ const Home = () => {
                         </div>
                       </div>
                     </div>
+
+                    {resumeMeta?.next_page_url && (
+                      <div className="mt-10 flex justify-center">
+                        <Button
+                          variant="outline"
+                          disabled={loadMoreLoading}
+                          onClick={() => fetchResumes(resumePage + 1, true)}
+                          className="rounded-xl border border-slate-300 bg-[#F3F7F5] px-8 py-6 text-[#183D3D] shadow-none transition-all duration-200 hover:border-[#183D3D]/60 hover:bg-[#183D3D]/10 hover:text-[#183D3D] focus-visible:ring-2 focus-visible:ring-[#183D3D]/30 disabled:opacity-60"
+                        >
+                          {loadMoreLoading ? "Loading..." : "Load more"}
+                        </Button>
+                      </div>
+                    )}
                   </section>
                 </>
               </motion.div>
@@ -415,13 +475,13 @@ const Home = () => {
                         </p>
 
                         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                          {dataLoading ? (
+                          {draftLoading && drafts.length === 0 ? (
                             [1, 2, 3].map((_, idx) => (
                               <div
                                 key={idx}
-                                className="overflow-hidden rounded-2xl bg-[#E6F0EC]"
+                                className="flex h-[380px] flex-col overflow-hidden rounded-2xl bg-[#E6F0EC]"
                               >
-                                <Skeleton className="h-56 w-full bg-[#CFE5DC]" />
+                                <Skeleton className="w-full flex-1 bg-[#CFE5DC]" />
                                 <div className="space-y-2 p-4">
                                   <Skeleton className="h-4 w-3/4 bg-[#CFE5DC]" />
                                   <Skeleton className="h-3 w-1/2 bg-[#c9e1d8]" />
@@ -541,6 +601,18 @@ const Home = () => {
                         </div>
                       </div>
                     </div>
+                    {draftMeta?.next_page_url && (
+                      <div className="mt-10 flex justify-center">
+                        <Button
+                          variant="outline"
+                          disabled={draftLoadMoreLoading}
+                          onClick={() => fetchDrafts(draftPage + 1, true)}
+                          className="rounded-xl border border-slate-300 bg-[#F3F7F5] px-8 py-6 text-[#183D3D] shadow-none transition-all duration-200 hover:border-[#183D3D]/60 hover:bg-[#183D3D]/10 hover:text-[#183D3D] focus-visible:ring-2 focus-visible:ring-[#183D3D]/30 disabled:opacity-60"
+                        >
+                          {draftLoadMoreLoading ? "Loading..." : "Load more"}
+                        </Button>
+                      </div>
+                    )}
                   </section>
                 </>
               </motion.div>

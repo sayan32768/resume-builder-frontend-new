@@ -36,18 +36,18 @@ const Hero = () => {
 
           <div className="mt-4 flex items-center gap-6">
             <a href="/home">
-              <div className="rounded-full bg-[#183D3D] px-6 py-3 font-medium text-white max-lg:text-sm">
+              <div className="rounded-full bg-[#183D3D] px-6 py-3 font-medium text-white transition hover:bg-[#145252] max-lg:text-sm">
                 Get Started Now
               </div>
             </a>
 
-            <div className="flex flex-col">
+            {/* <div className="flex flex-col">
               <div className="flex items-center gap-2 text-sm">
                 <span className="text-yellow-500">★★★★★</span>
                 <span className="font-medium">5.0</span>
               </div>
               <span className="text-slate-500">from 120+ reviews</span>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -66,7 +66,7 @@ const Hero = () => {
             <div className="flex flex-col justify-between rounded-l-[10rem] bg-[#ECECDC] p-10">
               <div className="">
                 <h3 className="text-right font-semibold text-[#183D3D] max-md:text-xl md:text-5xl">
-                  1+
+                  4
                 </h3>
                 <p className="max-md:text-m mt-1 text-slate-600 md:text-xl">
                   Resume Templates
