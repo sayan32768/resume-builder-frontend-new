@@ -212,6 +212,10 @@ const ResumePDFClassic = ({ data, color }) => {
   const certifications = data?.certifications || [];
   const skills = data?.skills || [];
 
+  const hasContactInfo =
+    ["email", "phone", "address"].some((key) => p?.[key]?.trim?.()) ||
+    p?.socials?.some((s) => s?.name?.trim?.() || s?.link?.trim?.());
+
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap={false}>
@@ -219,65 +223,67 @@ const ResumePDFClassic = ({ data, color }) => {
         <View style={[styles.left, { backgroundColor: color }]}>
           <View>
             {/* CONTACT */}
-            <View style={styles.leftSection}>
-              <Text style={styles.leftTitle}>Contact</Text>
-              {p.email && (
-                <View style={styles.iconRow}>
-                  <Image src={MailIcon} style={styles.icon} />
-                  <Text style={styles.leftText}>{p.email}</Text>
-                </View>
-              )}
-
-              {p.phone && (
-                <View style={styles.iconRow}>
-                  <Image src={PhoneIcon} style={styles.icon} />
-                  <Text style={styles.leftText}>{p.phone}</Text>
-                </View>
-              )}
-
-              {p.address && (
-                <View style={styles.iconRow}>
-                  <Image src={MapPinIcon} style={styles.icon} />
-                  <Text style={styles.leftText}>{p.address}</Text>
-                </View>
-              )}
-
-              {(p.socials || []).map((s, i) => {
-                const name = s.name?.toLowerCase();
-                const icon =
-                  name === "github"
-                    ? GithubIcon
-                    : name === "linkedin"
-                      ? LinkedinIcon
-                      : name === "instagram"
-                        ? InstagramIcon
-                        : null;
-
-                return (
-                  <View key={i} style={styles.iconRow}>
-                    {icon && <Image src={icon} style={styles.icon} />}
-
-                    {s.link ? (
-                      <Link
-                        src={s.link}
-                        style={[
-                          styles.leftText,
-                          {
-                            color: "#93c5fd",
-                            textDecoration: "underline",
-                            fontSize: 9,
-                          },
-                        ]}
-                      >
-                        {s.name}
-                      </Link>
-                    ) : (
-                      <Text style={styles.leftText}>{s.name}: -</Text>
-                    )}
+            {hasContactInfo && (
+              <View style={styles.leftSection}>
+                <Text style={styles.leftTitle}>Contact</Text>
+                {p.email && (
+                  <View style={styles.iconRow}>
+                    <Image src={MailIcon} style={styles.icon} />
+                    <Text style={styles.leftText}>{p.email}</Text>
                   </View>
-                );
-              })}
-            </View>
+                )}
+
+                {p.phone && (
+                  <View style={styles.iconRow}>
+                    <Image src={PhoneIcon} style={styles.icon} />
+                    <Text style={styles.leftText}>{p.phone}</Text>
+                  </View>
+                )}
+
+                {p.address && (
+                  <View style={styles.iconRow}>
+                    <Image src={MapPinIcon} style={styles.icon} />
+                    <Text style={styles.leftText}>{p.address}</Text>
+                  </View>
+                )}
+
+                {(p.socials || []).map((s, i) => {
+                  const name = s.name?.toLowerCase();
+                  const icon =
+                    name === "github"
+                      ? GithubIcon
+                      : name === "linkedin"
+                        ? LinkedinIcon
+                        : name === "instagram"
+                          ? InstagramIcon
+                          : null;
+
+                  return (
+                    <View key={i} style={styles.iconRow}>
+                      {icon && <Image src={icon} style={styles.icon} />}
+
+                      {s.link ? (
+                        <Link
+                          src={s.link}
+                          style={[
+                            styles.leftText,
+                            {
+                              color: "#93c5fd",
+                              textDecoration: "underline",
+                              fontSize: 9,
+                            },
+                          ]}
+                        >
+                          {s.name}
+                        </Link>
+                      ) : (
+                        <Text style={styles.leftText}>{s.name}: -</Text>
+                      )}
+                    </View>
+                  );
+                })}
+              </View>
+            )}
 
             {/* EDUCATION */}
             {education.length > 0 && (
@@ -371,7 +377,7 @@ const ResumePDFClassic = ({ data, color }) => {
 
         {/* RIGHT */}
         <View style={styles.right}>
-          <Text style={styles.name}>{p.fullName || "-"}</Text>
+          <Text style={styles.name}>{p.fullName || ""}</Text>
           {p.title && <Text style={styles.title}>{p.title}</Text>}
 
           {p.about && (

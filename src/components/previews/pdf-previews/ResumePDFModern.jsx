@@ -149,6 +149,10 @@ const ResumePDFModern = ({ data, color }) => {
   const projects = data?.projects || [];
   const certifications = data?.certifications || [];
 
+  const hasContactInfo =
+    ["email", "phone", "address"].some((key) => personal?.[key]?.trim?.()) ||
+    personal?.socials?.some((s) => s?.name?.trim?.() || s?.link?.trim?.());
+
   const yearRange = (dates) => {
     if (!dates) return "";
     if (dates.startDate && dates.endDate)
@@ -179,29 +183,33 @@ const ResumePDFModern = ({ data, color }) => {
         <View style={styles.leftColumn}>
           <View>
             {/* CONTACT */}
-            <View style={styles.leftSection}>
-              <Text style={[styles.leftTitle, { color: color }]}>Contact</Text>
-              {personal.phone && (
-                <Text style={styles.leftText}>{personal.phone}</Text>
-              )}
-              {personal.email && (
-                <Text style={styles.leftText}>{personal.email}</Text>
-              )}
-              {personal.address && (
-                <Text style={styles.leftText}>{personal.address}</Text>
-              )}
-              {(personal.socials || []).map((s, i) => (
-                <Text key={i} style={styles.leftText}>
-                  {s.link ? (
-                    <Link style={[{ color: color }]} src={s.link}>
-                      {s.name}
-                    </Link>
-                  ) : (
-                    `${s.name}: -`
-                  )}
+            {hasContactInfo && (
+              <View style={styles.leftSection}>
+                <Text style={[styles.leftTitle, { color: color }]}>
+                  Contact
                 </Text>
-              ))}
-            </View>
+                {personal.phone && (
+                  <Text style={styles.leftText}>{personal.phone}</Text>
+                )}
+                {personal.email && (
+                  <Text style={styles.leftText}>{personal.email}</Text>
+                )}
+                {personal.address && (
+                  <Text style={styles.leftText}>{personal.address}</Text>
+                )}
+                {(personal.socials || []).map((s, i) => (
+                  <Text key={i} style={styles.leftText}>
+                    {s.link ? (
+                      <Link style={[{ color: color }]} src={s.link}>
+                        {s.name}
+                      </Link>
+                    ) : (
+                      `${s.name}: -`
+                    )}
+                  </Text>
+                ))}
+              </View>
+            )}
 
             {/* EDUCATION */}
             {education.length > 0 && (
@@ -294,12 +302,14 @@ const ResumePDFModern = ({ data, color }) => {
         {/* RIGHT COLUMN */}
         <View style={styles.rightColumn}>
           {/* HEADER */}
-          <View style={[styles.header, { borderBottomColor: color }]}>
-            <Text style={styles.headerName}>{personal.fullName || "-"}</Text>
-            {personal.about && (
-              <Text style={styles.headerAbout}>{personal.about}</Text>
-            )}
-          </View>
+          {(personal.fullName || personal.about) && (
+            <View style={[styles.header, { borderBottomColor: color }]}>
+              <Text style={styles.headerName}>{personal.fullName || ""}</Text>
+              {personal.about && (
+                <Text style={styles.headerAbout}>{personal.about}</Text>
+              )}
+            </View>
+          )}
 
           {/* PROFESSIONAL EXPERIENCE */}
           {experience.length > 0 && (

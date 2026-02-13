@@ -181,7 +181,7 @@ const ResumePDFMinimal = ({ data, color = "#111827" }) => {
         <View style={styles.pageContent}>
           {/* HEADER */}
           <View style={styles.header}>
-            <Text style={styles.name}>{personal.fullName || "-"}</Text>
+            <Text style={styles.name}>{personal.fullName || ""}</Text>
 
             {personal.about && (
               <Text style={styles.subtitle}>{personal.about}</Text>

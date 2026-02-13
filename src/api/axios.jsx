@@ -5,6 +5,7 @@ import {
   setTokens,
   clearTokens,
 } from "../helpers/authStorage.js";
+import { queryClient } from "@/lib/queryClient";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -45,7 +46,7 @@ api.interceptors.response.use(
               Authorization: `Bearer ${refresh}`,
               Accept: "application/json",
             },
-          }
+          },
         );
 
         const newAccess = res.data.access_token;
@@ -55,14 +56,17 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newAccess}`;
         return api(originalRequest);
       } catch (err) {
+        // 🔥 clear all TanStack caches (including persisted ones)
+        queryClient.clear();
         clearTokens();
+        localStorage.clear();
         window.location.href = "/login";
         return Promise.reject(err);
       }
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

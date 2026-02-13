@@ -145,7 +145,7 @@ const ResumePreviewMinimal = ({ color }) => {
 
       {/* ================= HEADER ================= */}
       <div className="min-header">
-        <h1>{personal.fullName || "-"}</h1>
+        <h1>{personal.fullName || ""}</h1>
 
         {personal.about && <p className="subtitle">{personal.about}</p>}
 

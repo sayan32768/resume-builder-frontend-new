@@ -59,9 +59,20 @@ export function LoginForm({ className, ...props }) {
         localStorage.setItem("access_token", res.data.access_token);
         localStorage.setItem("refresh_token", res.data.refresh_token);
 
-        setUser(res.data.data);
+        const rawUser = res.data.data;
+
+        const safeUser = {
+          id: rawUser.id,
+          email: rawUser.email,
+          fullName: rawUser.fullName,
+        };
+
+        localStorage.setItem("user", JSON.stringify(safeUser));
+        setUser(safeUser);
         toast.success(res.data.message);
-        navigate("/home", { replace: true });
+        setTimeout(() => {
+          navigate("/home", { replace: true });
+        }, 0);
       }
     } catch (error) {
       setUser(null);

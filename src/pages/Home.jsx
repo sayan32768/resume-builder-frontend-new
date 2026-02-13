@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Download, MoreVertical, Plus, Trash } from "lucide-react";
+import { MoreVertical, Plus, Trash } from "lucide-react";
 import { getData } from "@/contexts/UserContext";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -11,26 +11,20 @@ import { AnimatePresence, motion } from "framer-motion";
 import { renderTemplatePreviewCard } from "@/components/previews/helpers/RenderTemplatePreviewCard";
 import { RESUME_TEMPLATES } from "@/components/previews/helpers/templates";
 import { Button } from "@/components/ui/button";
+import {
+  usePublishedResumes,
+  useDraftResumes,
+  useDeleteResume,
+} from "@/api/queries/resumeQueries";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Home = () => {
   const { user, setUser } = getData();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [open, setOpen] = useState(0);
   const [activeTab, setActiveTab] = useState("resumes");
-  const [draftsFetched, setDraftsFetched] = useState(false);
-
-  const [pastResumes, setPastResumes] = useState([]);
-  const [dataLoading, setDataLoading] = useState(false);
-  const [loadMoreLoading, setLoadMoreLoading] = useState(false); // load more only
-  const [resumeMeta, setResumeMeta] = useState(null);
-  const [resumePage, setResumePage] = useState(1);
-
-  const [drafts, setDrafts] = useState([]);
-  const [draftMeta, setDraftMeta] = useState(null);
-  const [draftPage, setDraftPage] = useState(1);
-  const [draftLoading, setDraftLoading] = useState(false);
-  const [draftLoadMoreLoading, setDraftLoadMoreLoading] = useState(false); // load more only
 
   const tabRefs = {
     resumes: useRef(null),
@@ -38,64 +32,25 @@ const Home = () => {
     templates: useRef(null),
   };
 
-  const fetchResumes = async (page = 1, append = false) => {
-    if (append) setLoadMoreLoading(true);
-    else setDataLoading(true);
+  // ---------- published ----------
+  const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
+    usePublishedResumes();
 
-    try {
-      const res = await api.get(`/api/resume/all?type=published&page=${page}`);
+  const pastResumes = data?.pages.flatMap((p) => p.data) ?? [];
 
-      if (res.data.success) {
-        const paginator = res.data.data;
+  // ---------- drafts ----------
+  const {
+    data: draftData,
+    isLoading: draftLoading,
+    isFetchingNextPage: draftLoadMoreLoading,
+    fetchNextPage: fetchMoreDrafts,
+    hasNextPage: hasMoreDrafts,
+  } = useDraftResumes();
 
-        setPastResumes((prev) =>
-          append ? [...prev, ...paginator.data] : paginator.data,
-        );
+  const drafts = draftData?.pages.flatMap((p) => p.data) ?? [];
 
-        setResumeMeta(paginator);
-        setResumePage(paginator.current_page);
-      }
-    } finally {
-      if (append) setLoadMoreLoading(false);
-      else setDataLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchResumes(1);
-  }, []);
-
-  const fetchDrafts = async (page = 1, append = false) => {
-    if (append) setDraftLoadMoreLoading(true);
-    else setDraftLoading(true);
-
-    try {
-      const res = await api.get(`/api/resume/all?type=drafts&page=${page}`);
-
-      if (res.data.success) {
-        const paginator = res.data.data;
-
-        setDrafts((prev) =>
-          append ? [...prev, ...paginator.data] : paginator.data,
-        );
-
-        setDraftMeta(paginator);
-        setDraftPage(paginator.current_page);
-
-        setDraftsFetched(true);
-      }
-    } finally {
-      if (append) setDraftLoadMoreLoading(false);
-      else setDraftLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (activeTab !== "drafts") return;
-    if (draftsFetched) return;
-
-    fetchDrafts(1);
-  }, [activeTab, draftsFetched]);
+  // DELETE MODAL
+  const [confirmId, setConfirmId] = useState(null);
 
   useEffect(() => {
     const close = () => setOpen(null);
@@ -115,10 +70,17 @@ const Home = () => {
     });
   }, [activeTab, pastResumes.length, drafts.length]);
 
+  const [loggingOut, setLoggingOut] = useState(false);
+
   const handleLogout = async () => {
+    if (loggingOut) return;
+
+    setLoggingOut(true);
     try {
       const res = await api.post("/api/auth/logout");
       if (res.data.success) {
+        // 🔥 clear all TanStack caches (including persisted ones)
+        queryClient.clear();
         localStorage.clear();
         navigate("/");
         setUser(null);
@@ -126,30 +88,21 @@ const Home = () => {
       }
     } catch {
       toast.error("Could not log out");
+    } finally {
+      setLoggingOut(false);
     }
   };
 
-  const deleteResume = async (id, isDraft) => {
-    try {
-      const res = await api.delete(`api/resume/${id}`);
-      if (res.data.success) {
-        if (!isDraft) {
-          setPastResumes((prev) => prev.filter((r) => r._id !== id));
-        } else {
-          setDrafts((prev) => prev.filter((r) => r._id !== id));
-        }
-
-        toast.success("Resume deleted");
-      }
-    } catch {
-      toast.error("Could not delete resume");
-    }
-  };
+  const { mutate: deleteResume, isPending, variables } = useDeleteResume();
 
   return (
     <>
       <div className="relative min-h-screen overflow-hidden bg-[#F3F7F5]">
-        <Navbar user={user} handleLogout={handleLogout} />
+        <Navbar
+          user={user}
+          handleLogout={handleLogout}
+          loggingOut={loggingOut}
+        />
 
         {/* ================= GLOBAL BACKGROUND ================= */}
         <div className="pointer-events-none absolute inset-0 z-0">
@@ -305,7 +258,7 @@ const Home = () => {
                             </p>
                           </div>
 
-                          {dataLoading && pastResumes.length === 0 ? (
+                          {isLoading && pastResumes.length === 0 ? (
                             [1, 2, 3].map((_, idx) => (
                               <div
                                 key={idx}
@@ -379,10 +332,8 @@ const Home = () => {
                                       className="absolute right-0 mt-2 w-32 rounded-xl border-0 bg-white shadow-lg"
                                     >
                                       <button
-                                        onClick={() =>
-                                          deleteResume(doc._id, false)
-                                        }
-                                        className="flex w-full gap-2 rounded-xl px-4 py-2 text-sm text-red-600 hover:cursor-pointer hover:bg-red-50"
+                                        onClick={() => setConfirmId(doc._id)}
+                                        className="flex w-full items-center gap-2 rounded-xl px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                                       >
                                         <Trash size={14} />
                                         Delete
@@ -441,7 +392,7 @@ const Home = () => {
                       </div>
                     </div>
 
-                    {resumeMeta?.next_page_url && (
+                    {/* {resumeMeta?.next_page_url && (
                       <div className="mt-10 flex justify-center">
                         <Button
                           variant="outline"
@@ -452,6 +403,14 @@ const Home = () => {
                           {loadMoreLoading ? "Loading..." : "Load more"}
                         </Button>
                       </div>
+                    )} */}
+                    {hasNextPage && (
+                      <Button
+                        disabled={isFetchingNextPage}
+                        onClick={() => fetchNextPage()}
+                      >
+                        {isFetchingNextPage ? "Loading..." : "Load more"}
+                      </Button>
                     )}
                   </section>
                 </>
@@ -551,10 +510,8 @@ const Home = () => {
                                       className="absolute right-0 mt-2 w-32 rounded-xl border-0 bg-white shadow-lg"
                                     >
                                       <button
-                                        onClick={() =>
-                                          deleteResume(doc._id, true)
-                                        }
-                                        className="flex w-full gap-2 rounded-xl px-4 py-2 text-sm text-red-600 hover:cursor-pointer hover:bg-red-50"
+                                        onClick={() => setConfirmId(doc._id)}
+                                        className="flex w-full items-center gap-2 rounded-xl px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                                       >
                                         <Trash size={14} />
                                         Delete
@@ -601,7 +558,7 @@ const Home = () => {
                         </div>
                       </div>
                     </div>
-                    {draftMeta?.next_page_url && (
+                    {/* {draftMeta?.next_page_url && (
                       <div className="mt-10 flex justify-center">
                         <Button
                           variant="outline"
@@ -612,6 +569,14 @@ const Home = () => {
                           {draftLoadMoreLoading ? "Loading..." : "Load more"}
                         </Button>
                       </div>
+                    )} */}
+                    {hasMoreDrafts && (
+                      <Button
+                        disabled={draftLoadMoreLoading}
+                        onClick={() => fetchMoreDrafts()}
+                      >
+                        {draftLoadMoreLoading ? "Loading..." : "Load more"}
+                      </Button>
                     )}
                   </section>
                 </>
@@ -685,6 +650,53 @@ const Home = () => {
           <div className="mt-18">
             <Footer />
           </div>
+
+          {confirmId && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+              <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+                <h3 className="text-lg font-semibold text-slate-800">
+                  Delete resume?
+                </h3>
+
+                <p className="mt-2 text-sm text-slate-500">
+                  This action cannot be undone.
+                </p>
+
+                <div className="mt-6 flex justify-end gap-3">
+                  <button
+                    disabled={isPending && variables === confirmId}
+                    onClick={() => setConfirmId(null)}
+                    className="rounded-lg px-4 py-2 text-sm text-slate-600 hover:bg-slate-100"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    disabled={isPending && variables === confirmId}
+                    onClick={() =>
+                      deleteResume(confirmId, {
+                        onSuccess: () => {
+                          toast.success("Resume deleted");
+                          setConfirmId(null);
+                        },
+                        onError: () => toast.error("Could not delete resume"),
+                      })
+                    }
+                    className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700 disabled:opacity-60"
+                  >
+                    {isPending && variables === confirmId ? (
+                      <>
+                        <span className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                        Deleting...
+                      </>
+                    ) : (
+                      "Delete"
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>

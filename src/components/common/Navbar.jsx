@@ -1,11 +1,18 @@
 import React, { useState } from "react";
 import { Button } from "../ui/button";
-import { AtSign, LogOut, User2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { AtSign, LogOut, Settings2, User2 } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const Navbar = ({ user, handleLogout }) => {
+const Navbar = ({ user, handleLogout, loggingOut }) => {
   const [isDropdownShowing, setIsDropdownShowing] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const goToProfile = () => {
+    if (location.pathname !== "/profile") {
+      navigate("/profile");
+    }
+  };
 
   return (
     <header className="relative z-50 w-full">
@@ -27,7 +34,7 @@ const Navbar = ({ user, handleLogout }) => {
               className="flex h-10 w-10 items-center justify-center rounded-full bg-[#183D3D] text-white transition hover:opacity-90 md:h-12 md:w-12"
             >
               <span className="text-lg font-bold">
-                {user.email.charAt(0).toUpperCase()}
+                {user.fullName.charAt(0).toUpperCase()}
               </span>
             </button>
 
@@ -51,11 +58,38 @@ const Navbar = ({ user, handleLogout }) => {
                     <div className="h-px bg-slate-200" />
 
                     <button
+                      onClick={goToProfile}
+                      className="flex items-center gap-3 rounded-lg px-2 py-2 text-[#183D3D] transition hover:cursor-pointer hover:bg-[#183D3D]/8"
+                    >
+                      <Settings2 className="h-4 w-4" />
+                      <span className="text-sm font-medium">Edit Profile</span>
+                    </button>
+
+                    {/* <button
                       onClick={handleLogout}
                       className="flex items-center gap-3 rounded-lg px-2 py-2 text-red-600 transition hover:cursor-pointer hover:bg-red-50"
                     >
                       <LogOut className="h-4 w-4" />
                       <span className="text-sm font-medium">Logout</span>
+                    </button> */}
+                    <button
+                      onClick={handleLogout}
+                      disabled={loggingOut}
+                      className="flex items-center gap-3 rounded-lg px-2 py-2 text-red-600 transition hover:cursor-pointer hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {loggingOut ? (
+                        <>
+                          <span className="h-4 w-4 animate-spin rounded-full border-2 border-red-600 border-t-transparent" />
+                          <span className="text-sm font-medium">
+                            Logging out...
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <LogOut className="h-4 w-4" />
+                          <span className="text-sm font-medium">Logout</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>

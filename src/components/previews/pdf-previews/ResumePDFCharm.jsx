@@ -276,10 +276,12 @@ const ResumePDFCharm = ({ data, color }) => {
                 { backgroundColor: color || theme.sidebarBg },
               ]}
             >
-              <View style={styles.sidebarSection}>
-                <Text style={styles.sidebarTitle}>Profile</Text>
-                <Text style={styles.sidebarText}>{p.about || "-"}</Text>
-              </View>
+              {p.about && (
+                <View style={styles.sidebarSection}>
+                  <Text style={styles.sidebarTitle}>Profile</Text>
+                  <Text style={styles.sidebarText}>{p.about || "-"}</Text>
+                </View>
+              )}
 
               {skills.length > 0 && (
                 <View style={styles.sidebarSection}>
@@ -338,8 +340,8 @@ const ResumePDFCharm = ({ data, color }) => {
             {/* RIGHT */}
             <View style={styles.right}>
               <View style={styles.header}>
-                <Text style={styles.name}>{p.fullName || "-"}</Text>
-                <Text style={styles.jobTitle}>Professional Profile</Text>
+                <Text style={styles.name}>{p.fullName || ""}</Text>
+                <Text style={styles.jobTitle}></Text>
               </View>
 
               <View style={styles.content}>

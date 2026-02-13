@@ -162,47 +162,59 @@ const ResumePreviewClassic = ({ color }) => {
 
       <div className="left-section">
         <div>
-          <h2 className="section-title">Contact</h2>
-          <div className="contact-info">
-            <div className="contact-item">
-              <Mail size={14} /> {personal.email || "you@example.com"}
-            </div>
-            <div className="contact-item">
-              <Phone size={14} /> {personal.phone || "+91 XXXXXXXXXX"}
-            </div>
-            <div className="contact-item">
-              <MapPin size={14} /> {personal.address || "Your Address"}
-            </div>
-            {personal.socials?.map((s, i) => (
-              <div key={i} className="contact-item">
-                {s.name?.toLowerCase() === "linkedin" && <Linkedin size={14} />}
-                {s.name?.toLowerCase() === "github" && <Github size={14} />}
-                {s.name?.toLowerCase() === "instagram" && (
-                  <Instagram size={14} />
-                )}
+          {(["email", "phone", "address", "socials"].some((key) =>
+            personal?.[key]?.trim?.(),
+          ) ||
+            personal?.socials?.some(
+              (s) => s?.name?.trim?.() || s?.link?.trim?.(),
+            )) && (
+            <>
+              <h2 className="section-title">Contact</h2>
+              <div className="contact-info">
+                <div className="contact-item">
+                  {personal.email && <Mail size={14} />} {personal.email || ""}
+                </div>
+                <div className="contact-item">
+                  {personal.phone && <Phone size={14} />} {personal.phone || ""}
+                </div>
+                <div className="contact-item">
+                  {personal.address && <MapPin size={14} />}{" "}
+                  {personal.address || ""}
+                </div>
+                {personal.socials?.map((s, i) => (
+                  <div key={i} className="contact-item">
+                    {s.name?.toLowerCase() === "linkedin" && (
+                      <Linkedin size={14} />
+                    )}
+                    {s.name?.toLowerCase() === "github" && <Github size={14} />}
+                    {s.name?.toLowerCase() === "instagram" && (
+                      <Instagram size={14} />
+                    )}
 
-                <span>
-                  {s.link ? (
-                    <>
-                      <a
-                        href={s.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          color: "#93c5fd",
-                          textDecoration: "underline",
-                        }}
-                      >
-                        {s.name}
-                      </a>
-                    </>
-                  ) : (
-                    `${s.name}: -`
-                  )}
-                </span>
+                    <span>
+                      {s.link ? (
+                        <>
+                          <a
+                            href={s.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              color: "#93c5fd",
+                              textDecoration: "underline",
+                            }}
+                          >
+                            {s.name}
+                          </a>
+                        </>
+                      ) : (
+                        `${s.name}: -`
+                      )}
+                    </span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          )}
 
           {education.length > 0 && (
             <>
@@ -312,7 +324,7 @@ const ResumePreviewClassic = ({ color }) => {
 
       <div className="right-section">
         <div>
-          <h1 className="header-name">{personal.fullName || "Your Name"}</h1>
+          <h1 className="header-name">{personal.fullName || ""}</h1>
         </div>
 
         {personal.about && (

@@ -13,6 +13,10 @@ const ResumePreviewModern = ({ color }) => {
   const projects = data?.projects || [];
   const certifications = data?.certifications || [];
 
+  const hasPersonalInfo =
+    ["email", "phone", "address"].some((key) => personal?.[key]?.trim?.()) ||
+    personal?.socials?.some((s) => s?.name?.trim?.() || s?.link?.trim?.());
+
   return (
     <div className="resume-preview">
       <style>
@@ -175,7 +179,7 @@ const ResumePreviewModern = ({ color }) => {
       </style>
       <div className="left-column">
         <div>
-          {personal && (
+          {hasPersonalInfo && (
             <section>
               <h3>contact</h3>
               <ul>
@@ -316,12 +320,14 @@ const ResumePreviewModern = ({ color }) => {
         </div>
       </div>
       <div className="right-column">
-        <header>
-          <h1>{personal.fullName || "-"}</h1>
-          {personal.about && (
-            <p style={{ lineHeight: 1.2 }}>{personal.about}</p>
-          )}
-        </header>
+        {(personal.fullName || personal.about) && (
+          <header>
+            <h1>{personal.fullName || ""}</h1>
+            {personal.about && (
+              <p style={{ lineHeight: 1.2 }}>{personal.about}</p>
+            )}
+          </header>
+        )}
         {experience.length > 0 && (
           <section>
             <h2>professional experience</h2>

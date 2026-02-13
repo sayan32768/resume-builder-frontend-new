@@ -237,14 +237,12 @@ const ResumePreviewCharm = ({ color }) => {
         {/* Left Sidebar (Green) */}
         <div className="left-sidebar">
           {/* Profile Section */}
-          <div className="sidebar-section">
-            <h3 className="sidebar-section-title">Profile</h3>
-            <p className="sidebar-text">
-              {personal.about ||
-                "I am a professional with comprehensive knowledge in my field. Experienced in coordinating with stakeholders and managing complex tasks efficiently."}
-            </p>
-          </div>
-
+          {personal.about && (
+            <div className="sidebar-section">
+              <h3 className="sidebar-section-title">Profile</h3>
+              <p className="sidebar-text">{personal.about || ""}</p>
+            </div>
+          )}
           {/* Skills Section */}
           {skills.length > 0 && (
             <div className="sidebar-section">
@@ -309,10 +307,10 @@ const ResumePreviewCharm = ({ color }) => {
         <div className="right-column">
           {/* Header (Beige) */}
           <div className="right-header">
-            <h1 className="name-title">{personal.fullName || "Your Name"}</h1>
+            <h1 className="name-title">{personal.fullName || ""}</h1>
             {/* The reference didn't extract a Job Title explicitly, but visually it goes here. 
                 Using a placeholder or a secondary field if available, otherwise generic. */}
-            <p className="job-title">Professional Profile</p>
+            <p className="job-title"></p>
           </div>
 
           {/* Content (White) */}
@@ -447,12 +445,16 @@ const ResumePreviewCharm = ({ color }) => {
 
       {/* Footer Bar (Contact Info) */}
       <div className="footer-bar">
-        <div className="contact-pill">
-          <Phone size={14} /> {personal.phone || "+91 XXXXXXXXXX"}
-        </div>
-        <div className="contact-pill">
-          <Mail size={14} /> {personal.email || "you@example.com"}
-        </div>
+        {personal.phone && (
+          <div className="contact-pill">
+            <Phone size={14} /> {personal.phone || ""}
+          </div>
+        )}
+        {personal.email && (
+          <div className="contact-pill">
+            <Mail size={14} /> {personal.email || ""}
+          </div>
+        )}
         {personal.address && (
           <div className="contact-pill">
             <MapPin size={14} /> {personal.address}

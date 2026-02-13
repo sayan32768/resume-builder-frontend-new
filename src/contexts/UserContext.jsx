@@ -10,14 +10,23 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       // await new Promise((resolve) => setTimeout(resolve, 3000));
+
+      const cached = localStorage.getItem("user");
+
+      if (cached) {
+        setUser(JSON.parse(cached));
+        setLoading(false);
+      }
+
       try {
         const res = await api.get("/api/auth/me");
         if (res.data.success) {
           setUser(res.data.user);
+          localStorage.setItem("user", JSON.stringify(res.data.user));
         }
       } catch (err) {
         console.log(err);
-        setUser(null);
+        if (!cached) setUser(null);
       } finally {
         setLoading(false);
       }

@@ -15,6 +15,7 @@ import Verified from "./pages/Verified";
 import ChangePassword from "./pages/ChangePassword";
 import SendEmail from "./pages/SendEmail";
 import LandingPage2 from "./pages/LandingPage2";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -40,6 +41,15 @@ function App() {
           element={
             <ProtectedRoute>
               <Home />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           }
         />
