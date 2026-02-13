@@ -239,7 +239,18 @@ const Profile = () => {
             </>
           </div>
 
-          <div className="mx-auto mt-12 mb-20 max-w-7xl px-12">
+          {/* ================= Go back to home button ================= */}
+          <div className="mx-auto max-w-7xl px-12">
+            <Button
+              variant="outline"
+              onClick={() => navigate("/home")}
+              className="rounded-xl border border-slate-300 bg-[#F3F7F5] text-[#183D3D] shadow-none transition-all duration-200 hover:border-[#183D3D]/60 hover:bg-[#183D3D]/10 hover:text-[#183D3D] focus-visible:ring-2 focus-visible:ring-[#183D3D]/30"
+            >
+              &larr; Back to Home
+            </Button>
+          </div>
+
+          <div className="mx-auto mt-10 mb-20 max-w-7xl px-12">
             <div className="flex gap-6 max-md:flex-col md:flex-row">
               <div className="flex-1">
                 <form
@@ -404,7 +415,7 @@ const Profile = () => {
                     <div className="rounded-xl bg-[#e9fff0]/30 p-3">
                       <div className="mt-3 space-y-3">
                         <p className="font-medium text-[#183D3D]">
-                          {stats.lastResume.title}
+                          {stats?.lastResume?.title?.trim() || "Untitled"}
                         </p>
 
                         <p className="text-xs text-[#183D3D]/60">
@@ -434,9 +445,7 @@ const Profile = () => {
 
                       {/* continue button */}
                       <Button
-                        onClick={() =>
-                          navigate(`/resume/${stats.lastResume.id}`)
-                        }
+                        onClick={() => navigate(`/edit/${stats.lastResume.id}`)}
                         className="mt-6 w-full rounded-xl bg-[#183D3D] text-white hover:bg-[#0f2a2a]"
                       >
                         Continue Editing

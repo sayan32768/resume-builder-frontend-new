@@ -103,6 +103,10 @@ export function LoginForm({ className, ...props }) {
                 e.preventDefault();
                 handleSubmit(onSubmit)();
               }
+              if (e.key === "Enter" && e.target.id === "email") {
+                e.preventDefault();
+                document.getElementById("password")?.focus();
+              }
             }}
           >
             <FieldGroup>
@@ -148,6 +152,7 @@ export function LoginForm({ className, ...props }) {
                   />
 
                   <Button
+                    type="button"
                     tabIndex={-1}
                     onClick={changeVisibility}
                     className="absolute top-0 right-0 h-full bg-transparent px-3 text-slate-600 hover:bg-transparent"
